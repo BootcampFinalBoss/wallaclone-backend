@@ -67,3 +67,56 @@ exports.getAdvertById = async (req, res, next) => {
     next(err);
   }
 };
+
+// Create an advert --> POSt /api/adverts
+exports.postAdvert = async (req, res, next) => {
+  try {
+    const advertData = req.body;
+
+    // We create a document in memory
+    const advert = new Adverts(advertData);
+
+    const setAdvert = {
+      advert,
+      user: req.userId,
+    };
+    console.log(setAdvert);
+    // We save the document in the database
+    const advertSaved = await advert.save(setAdvert);
+
+    res.json({ result: advertSaved });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Update an advert --> /api/adverts/:id
+exports.putAdvert = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line no-underscore-dangle
+    const _id = req.params._id;
+    const advertData = req.body;
+
+    const advertSaved = await Adverts.findByIdAndUpdate({ _id }, advertData, {
+      new: true,
+      useFindAndModify: false,
+    });
+    res.json({ result: advertSaved });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteAdvert = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line no-underscore-dangle
+    const _id = req.params._id;
+
+    const borrarAnuncio = await Adverts.deleteOne({ _id });
+    console.log(borrarAnuncio);
+
+    res.send('Advert deleted succesfully!');
+  } catch (err) {
+    next(err);
+  }
+};
