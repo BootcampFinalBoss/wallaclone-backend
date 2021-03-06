@@ -49,7 +49,7 @@ exports.getAdvert = async function (req, res, next) {
     }
 
     const adverts = await Adverts.list(filter, limit, skip, sort);
-    res.json(adverts);
+    res.json({ result: adverts });
   } catch (err) {
     next(err);
   }

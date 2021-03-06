@@ -4,6 +4,7 @@ const router = express.Router();
 const { upload } = require('../../middleware/multer');
 const advertController = require('../../controllers/advertController');
 const auth = require('../../middleware/auth');
+const Adverts = require('../../models/Adverts');
 
 /**
  *  Get /api/adverts
