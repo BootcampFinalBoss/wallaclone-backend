@@ -8,12 +8,10 @@ exports.login = async (req, res, next) => {
   const { username, password } = req.body;
   const user = await Users.findOne({ username });
 
-  if (!user) {
-    await res.status(401).json({ msg: 'No existe el usuario.' });
-    next();
-  } else if (!bcrypt.compareSync(password, user.password)) {
-    await res.status(401).json({ msg: 'La Contraseña no es correcta.' });
-    next();
+  if (!user || !bcrypt.compareSync(password, user.password)) {
+    res
+      .status(404)
+      .send({ message: 'El nombre de usuario o la contraseña es incorrecto' });
   } else {
     const token = jwt.sign(
       {
@@ -22,18 +20,24 @@ exports.login = async (req, res, next) => {
         id: user._id,
       },
       process.env.KEY_SECRET,
-      { expiresIn: '2d' }
+      { expiresIn: '2d' },
     );
 
     res.json({ token });
   }
 };
+/* await res.status(401).json({ msg: "No existe el usuario." });
+      next();
+    } else if (!bcrypt.compareSync(password, user.password)) {
+      await res.status(404).send({ message: "La Contraseña no es correcta." });
+      next();
+    } else {*/
 
 /* Función Reset Password */
 
 exports.forgotPassword = async (req, res, next) => {
   const { email } = req.body;
-  if (email === '') {
+  if (!email) {
     res.json({ msg: 'El email no puede estar vacio' });
   }
   const user = await Users.findOne({ email });
@@ -69,7 +73,7 @@ exports.forgotPassword = async (req, res, next) => {
       subject: 'Reset Password',
       html: `<p>Hola ${user.name},</p> 
     <p>Ha solicitado el cambio de contraseña</p>
-    <p>Pulse el siguiente link: http://localhost:5000/reset/${token}</p>
+    <p>Pulse el siguiente link: http://localhost:3000/reset/${token}</p>
     <p>Saludos.</p>
 `,
     };
@@ -79,7 +83,7 @@ exports.forgotPassword = async (req, res, next) => {
         console.log(err);
         res.send(500, err.message);
       } else {
-        res.status(200).json(mailOptions);
+        res.status(200).send({ msg: 'El correo se ha enviado correctamente' });
       }
     });
   } catch (err) {
@@ -133,7 +137,7 @@ exports.resetPasswordMail = async (req, res, next) => {
             msg: 'Contraseña actualizada correctamente',
             resetPassword,
           });
-        }
+        },
       );
     } else {
       res.status(404).json({
