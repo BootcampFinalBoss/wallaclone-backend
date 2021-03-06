@@ -44,7 +44,7 @@ exports.forgotPassword = async (req, res, next) => {
 
   try {
     if (!user) {
-      res.status(404).json({ msg: "El usuario no existe en la BD" });
+      res.status(502).json({ msg: "El usuario no existe en la BD" });
       next();
     }
 
@@ -71,7 +71,7 @@ exports.forgotPassword = async (req, res, next) => {
       from: "<bcfinalboss@gmail.com>",
       to: "bcfinalboss@gmail.com",
       subject: "Reset Password",
-      html: `<p>Hola ${user.name},</p> 
+      html: `<p>Hola, {user.name}</p> 
     <p>Ha solicitado el cambio de contraseña</p>
     <p>Pulse el siguiente link: http://localhost:3000/reset/${token}</p>
     <p>Saludos.</p>
