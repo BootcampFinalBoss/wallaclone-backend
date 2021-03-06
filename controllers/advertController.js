@@ -112,8 +112,8 @@ exports.deleteAdvert = async (req, res, next) => {
     // eslint-disable-next-line no-underscore-dangle
     const _id = req.params._id;
 
-    const borrarAnuncio = await Adverts.deleteOne({ _id });
-    console.log(borrarAnuncio);
+    const advertDeleted = await Adverts.deleteOne({ _id });
+    console.log(advertDeleted);
 
     res.send('Advert deleted succesfully!');
   } catch (err) {
