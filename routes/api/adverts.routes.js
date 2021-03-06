@@ -35,4 +35,11 @@ router.put('/adverts/:_id', auth, advertController.putAdvert);
  */
 router.delete('/adverts/:_id', auth, advertController.deleteAdvert);
 
+/**
+ * GET /api/tags
+ */
+router.get('/tags', function (req, res) {
+  res.json({ result: Adverts.allowedTags() });
+});
+
 module.exports = router;
