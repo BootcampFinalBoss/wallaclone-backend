@@ -1,6 +1,6 @@
 /* eslint-disable indent,object-shorthand */
-const multer = require('multer');
-const path = require('path');
+const multer = require("multer");
+const path = require("path");
 
 const storage = (folder) =>
   multer.diskStorage({
@@ -11,11 +11,11 @@ const storage = (folder) =>
       const { username } = req.body;
       cb(
         null,
-        folder === 'avatar'
+        folder === "avatar"
           ? `${folder}-${username}-${Date.now()}${path.extname(
               file.originalname
             )}`
-          : `${folder}-${Date.now()}${path.extname(file.originalname)}`
+          : `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
       );
     },
   });
