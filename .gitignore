@@ -120,3 +120,4 @@ dist
 .prettierrc
 .eslintrc.js
 ../.idea
+./public/images/advert/*
