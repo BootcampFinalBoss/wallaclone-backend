@@ -2,10 +2,10 @@
 /* eslint-disable func-names */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable radix */
-const Adverts = require('../models/Adverts');
+const Adverts = require("../models/Adverts");
 
 exports.getAdvert = async function (req, res, next) {
-  console.log('The logged in user has the _id:', req.apiAuthUserID);
+  console.log("The logged in user has the _id:", req.apiAuthUserID);
 
   try {
     const { name } = req.query;
@@ -14,25 +14,25 @@ exports.getAdvert = async function (req, res, next) {
     const { tags } = req.query;
 
     // Others
-    const limit = parseInt(req.query.limit || 10);
+    const limit = parseInt(req.query.limit || 50);
     const skip = parseInt(req.query.skip);
-    const sort = req.query.sort || '_id';
+    const sort = req.query.sort || "_id";
 
     // Search filters
     const filter = {};
 
-    if (typeof name !== 'undefined') {
-      filter.name = new RegExp(`^${name}`, 'i');
+    if (typeof name !== "undefined") {
+      filter.name = new RegExp(`^${name}`, "i");
     }
 
-    if (typeof price !== 'undefined' && price !== '-') {
-      if (price.indexOf('-') !== -1) {
+    if (typeof price !== "undefined" && price !== "-") {
+      if (price.indexOf("-") !== -1) {
         filter.price = {};
-        const range = price.split('-');
-        if (range[0] !== '') {
+        const range = price.split("-");
+        if (range[0] !== "") {
           filter.price.$gte = range[0];
         }
-        if (range[1] !== '') {
+        if (range[1] !== "") {
           filter.price.$lte = range[1];
         }
       } else {
@@ -40,11 +40,11 @@ exports.getAdvert = async function (req, res, next) {
       }
     }
 
-    if (typeof tags !== 'undefined') {
+    if (typeof tags !== "undefined") {
       filter.tags = tags;
     }
 
-    if (typeof type !== 'undefined') {
+    if (typeof type !== "undefined") {
       filter.type = type;
     }
 
@@ -71,18 +71,24 @@ exports.getAdvertById = async (req, res, next) => {
 // Create an advert --> POSt /api/adverts
 exports.postAdvert = async (req, res, next) => {
   try {
-    const advertData = req.body;
+    const { name, price, type, tags } = req.body;
+
+    //const advertData = req.body;
+    //console.log(advertData);
 
     // We create a document in memory
-    const advert = new Adverts(advertData);
-
     const setAdvert = {
-      advert,
+      name,
+      price,
+      type,
+      tags,
+      image: req.file,
       user: req.userId,
     };
-    console.log(setAdvert);
+    const advert = new Adverts(setAdvert);
+    console.log(advert);
     // We save the document in the database
-    const advertSaved = await advert.save(setAdvert);
+    const advertSaved = await advert.save();
 
     res.json({ result: advertSaved });
   } catch (err) {
@@ -115,7 +121,7 @@ exports.deleteAdvert = async (req, res, next) => {
     const advertDeleted = await Adverts.deleteOne({ _id });
     console.log(advertDeleted);
 
-    res.send('Advert deleted succesfully!');
+    res.send("Advert deleted succesfully!");
   } catch (err) {
     next(err);
   }
