@@ -73,6 +73,11 @@ exports.getAdvertById = async (req, res, next) => {
 exports.postAdvert = async (req, res, next) => {
   try {
     const { name, price, type, tags } = req.body;
+    let image = req.file;
+
+    if (image) {
+      image = req.file.filename;
+    }
 
     //const advertData = req.body;
     //console.log(advertData);
@@ -83,7 +88,7 @@ exports.postAdvert = async (req, res, next) => {
       price,
       type,
       tags,
-      image: req.file,
+      image,
       user: req.userId,
     };
     const advert = new Adverts(setAdvert);
