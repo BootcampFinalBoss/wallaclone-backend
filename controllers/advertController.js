@@ -2,7 +2,9 @@
 /* eslint-disable func-names */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable radix */
+
 const Adverts = require("../models/Adverts");
+const Users = require("../models/Users");
 
 exports.getAdvert = async function (req, res, next) {
   console.log("The logged in user has the _id:", req.apiAuthUserID);
@@ -122,6 +124,18 @@ exports.deleteAdvert = async (req, res, next) => {
     console.log(advertDeleted);
 
     res.send("Advert deleted succesfully!");
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getUserAdverts = async (req, res, next) => {
+  try {
+    const userAdverts = await Adverts.find({}, function (err, advert) {
+      Users.populate(advert, { path: user }, function (err, advert) {
+        console.log(userAdverts);
+      });
+    });
   } catch (err) {
     next(err);
   }
