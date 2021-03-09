@@ -13,6 +13,9 @@ exports.login = async (req, res, next) => {
       .status(404)
       .send({ message: "El nombre de usuario o la contraseña es incorrecto" });
   } else {
+    const userId = {
+      idUser: user._id,
+    };
     const token = jwt.sign(
       {
         email: user.email,
@@ -23,7 +26,7 @@ exports.login = async (req, res, next) => {
       { expiresIn: "2d" }
     );
 
-    res.json({ token, username });
+    res.json({ token, username, userId });
   }
 };
 /* await res.status(401).json({ msg: "No existe el usuario." });

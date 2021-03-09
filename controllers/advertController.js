@@ -2,10 +2,11 @@
 /* eslint-disable func-names */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable radix */
-const Adverts = require('../models/Adverts');
+const Adverts = require("../models/Adverts");
+const Users = require("../models/Users");
 
 exports.getAdvert = async function (req, res, next) {
-  console.log('The logged in user has the _id:', req.apiAuthUserID);
+  console.log("The logged in user has the _id:", req.apiAuthUserID);
 
   try {
     const { name } = req.query;
@@ -16,23 +17,23 @@ exports.getAdvert = async function (req, res, next) {
     // Others
     const limit = parseInt(req.query.limit || 50);
     const skip = parseInt(req.query.skip);
-    const sort = req.query.sort || '_id';
+    const sort = req.query.sort || "_id";
 
     // Search filters
     const filter = {};
 
-    if (typeof name !== 'undefined') {
-      filter.name = new RegExp(`^${name}`, 'i');
+    if (typeof name !== "undefined") {
+      filter.name = new RegExp(`^${name}`, "i");
     }
 
-    if (typeof price !== 'undefined' && price !== '-') {
-      if (price.indexOf('-') !== -1) {
+    if (typeof price !== "undefined" && price !== "-") {
+      if (price.indexOf("-") !== -1) {
         filter.price = {};
-        const range = price.split('-');
-        if (range[0] !== '') {
+        const range = price.split("-");
+        if (range[0] !== "") {
           filter.price.$gte = range[0];
         }
-        if (range[1] !== '') {
+        if (range[1] !== "") {
           filter.price.$lte = range[1];
         }
       } else {
@@ -40,11 +41,11 @@ exports.getAdvert = async function (req, res, next) {
       }
     }
 
-    if (typeof tags !== 'undefined') {
+    if (typeof tags !== "undefined") {
       filter.tags = tags;
     }
 
-    if (typeof type !== 'undefined') {
+    if (typeof type !== "undefined") {
       filter.type = type;
     }
 
@@ -121,7 +122,19 @@ exports.deleteAdvert = async (req, res, next) => {
     const advertDeleted = await Adverts.deleteOne({ _id });
     console.log(advertDeleted);
 
-    res.send({ message: 'Advert deleted succesfully!', result: advertDeleted });
+    res.send({ message: "Advert deleted succesfully!", result: advertDeleted });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getUserAdverts = async (req, res, next) => {
+  try {
+    const userAdverts = await Adverts.find({}, function (err, advert) {
+      Users.populate(advert, { path: user }, function (err, advert) {
+        console.log(userAdverts);
+      });
+    });
   } catch (err) {
     next(err);
   }

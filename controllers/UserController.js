@@ -1,5 +1,5 @@
-const fs = require('fs');
-const Users = require('../models/Users');
+const fs = require("fs");
+const Users = require("../models/Users");
 
 /* Function createUser */
 
@@ -30,8 +30,9 @@ exports.createUser = async (req, res, next) => {
 
     /*Almaceno usuario en DB*/
     const user = new Users(userData);
-    await user.save();
-    res.json(user);
+    const userSave = await user.save();
+    res.send({ result: true, user: userSave });
+    console.log(userSave);
     next();
   } catch (err) {
     next(err);
@@ -47,13 +48,13 @@ exports.getUser = async (req, res, next) => {
 
       /* Comprueba que exista algun usuario*/
       if (!userDetail) {
-        res.send(404).json({ msg: 'El usuario no existe' });
+        res.send(404).json({ msg: "El usuario no existe" });
         next();
       }
 
       res.json(userDetail);
     } else {
-      res.json({ msg: 'no tienes permisos' });
+      res.json({ msg: "no tienes permisos" });
     }
   } catch (err) {
     next();
@@ -87,7 +88,7 @@ exports.updateUser = async (req, res, next) => {
       );
     }
 
-    res.json({ msg: 'No tienes permiso' });
+    res.json({ msg: "No tienes permiso" });
   } catch (err) {
     next();
   }
@@ -102,7 +103,7 @@ exports.deleteUser = async (req, res, next) => {
     if (!userDelete) {
       res
         .status(404)
-        .json({ msg: 'No existe el usuario en la base de datos.' });
+        .json({ msg: "No existe el usuario en la base de datos." });
       next();
     }
 
@@ -111,12 +112,12 @@ exports.deleteUser = async (req, res, next) => {
       await Users.findByIdAndRemove(userDelete);
 
       /* Borra el usuario y la foto del avatar*/
-      res.json({ msg: 'Usuario Borrado Correctamente', del: userDelete });
+      res.json({ msg: "Usuario Borrado Correctamente", del: userDelete });
       fs.unlinkSync(`./public/images/avatar/${userDelete.avatar}`);
       return;
     }
     res.status(401).json({
-      msg: 'No tienes permisos para hacer esto',
+      msg: "No tienes permisos para hacer esto",
     });
     next();
   } catch (err) {
