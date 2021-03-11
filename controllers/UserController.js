@@ -31,10 +31,11 @@ exports.createUser = async (req, res, next) => {
     /*Almaceno usuario en DB*/
     const user = new Users(userData);
     const userSave = await user.save();
-    res.send({ result: true, user: userSave });
+    res.send({ message: 'Se ha registrado correctamente'});
     console.log(userSave);
     next();
   } catch (err) {
+    //res.status(404).send({ message: 'Ha ocurrido un error durante el registro '});
     next(err);
   }
 };
