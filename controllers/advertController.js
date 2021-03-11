@@ -96,7 +96,7 @@ exports.postAdvert = async (req, res, next) => {
     // We save the document in the database
     const advertSaved = await advert.save();
 
-    res.json({ result: advertSaved });
+    res.send({ result: advertSaved, message: 'Anuncio Creado Correctamente'});
   } catch (err) {
     next(err);
   }
@@ -134,11 +134,10 @@ exports.deleteAdvert = async (req, res, next) => {
 };
 
 exports.getUserAdverts = async (req, res, next) => {
+  const {id} = req.params;
   try {
-    const userAdverts = await Adverts.find({}, function (err, advert) {
-      Users.populate(advert, { path: user }, function (err, advert) {
-        console.log(userAdverts);
-      });
+    await Adverts.find({user: id }, function (err, advert) {
+        res.json(advert);
     });
   } catch (err) {
     next(err);
