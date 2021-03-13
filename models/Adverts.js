@@ -55,11 +55,10 @@ const advertsSchema = new Schema(
 );
 
 // Methods
-advertsSchema.statics.list = function (filter, limit, skip, sort) {
-  const query = Adverts.find(filter);
+advertsSchema.statics.list = function (filter, limit, skip) {
+  const query = Adverts.find(filter).sort({ createdAt: -1 });
   query.limit(limit);
   query.skip(skip);
-  query.sort(sort);
   return query.exec();
 };
 
