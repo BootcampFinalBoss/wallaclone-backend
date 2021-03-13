@@ -2,11 +2,11 @@
 /* eslint-disable func-names */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable radix */
-const Adverts = require("../models/Adverts");
-const Users = require("../models/Users");
+const Adverts = require('../models/Adverts');
+const Users = require('../models/Users');
 
 exports.getAdvert = async function (req, res, next) {
-  console.log("The logged in user has the _id:", req.apiAuthUserID);
+  console.log('The logged in user has the _id:', req.apiAuthUserID);
 
   try {
     const { name } = req.query;
@@ -15,25 +15,25 @@ exports.getAdvert = async function (req, res, next) {
     const { tags } = req.query;
 
     // Others
-    const limit = parseInt(req.query.limit || 50);
-    const skip = parseInt(req.query.skip);
-    const sort = req.query.sort || "_id";
+    const limit = parseInt(req.query.limit || 10);
+    const skip = parseInt(req.query.skip || 10);
+    // const sort = req.query.sort || '_id';
 
     // Search filters
     const filter = {};
 
-    if (typeof name !== "undefined") {
-      filter.name = new RegExp(`^${name}`, "i");
+    if (typeof name !== 'undefined') {
+      filter.name = new RegExp(`^${name}`, 'i');
     }
 
-    if (typeof price !== "undefined" && price !== "-") {
-      if (price.indexOf("-") !== -1) {
+    if (typeof price !== 'undefined' && price !== '-') {
+      if (price.indexOf('-') !== -1) {
         filter.price = {};
-        const range = price.split("-");
-        if (range[0] !== "") {
+        const range = price.split('-');
+        if (range[0] !== '') {
           filter.price.$gte = range[0];
         }
-        if (range[1] !== "") {
+        if (range[1] !== '') {
           filter.price.$lte = range[1];
         }
       } else {
@@ -41,15 +41,15 @@ exports.getAdvert = async function (req, res, next) {
       }
     }
 
-    if (typeof tags !== "undefined") {
+    if (typeof tags !== 'undefined') {
       filter.tags = tags;
     }
 
-    if (typeof type !== "undefined") {
+    if (typeof type !== 'undefined') {
       filter.type = type;
     }
 
-    const adverts = await Adverts.list(filter, limit, skip, sort);
+    const adverts = await Adverts.list(filter, limit, skip);
     res.json({ result: adverts });
   } catch (err) {
     next(err);
@@ -96,7 +96,7 @@ exports.postAdvert = async (req, res, next) => {
     // We save the document in the database
     const advertSaved = await advert.save();
 
-    res.send({ result: advertSaved, message: 'Anuncio Creado Correctamente'});
+    res.send({ result: advertSaved, message: 'Anuncio Creado Correctamente' });
   } catch (err) {
     next(err);
   }
@@ -127,17 +127,17 @@ exports.deleteAdvert = async (req, res, next) => {
     const advertDeleted = await Adverts.deleteOne({ _id });
     console.log(advertDeleted);
 
-    res.send({ message: "Advert deleted succesfully!", result: advertDeleted });
+    res.send({ message: 'Advert deleted succesfully!', result: advertDeleted });
   } catch (err) {
     next(err);
   }
 };
 
 exports.getUserAdverts = async (req, res, next) => {
-  const {id} = req.params;
+  const { id } = req.params;
   try {
-    await Adverts.find({user: id }, function (err, advert) {
-        res.json(advert);
+    await Adverts.find({ user: id }, function (err, advert) {
+      res.json(advert);
     });
   } catch (err) {
     next(err);
