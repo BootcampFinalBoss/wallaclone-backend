@@ -55,7 +55,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     const update = {
       resetPasswordToken: token,
-      resetPasswordTokenExpire: Date.now() + 250000,
+      resetPasswordTokenExpire: Date.now() + 3600000,
     };
 
     await Users.findByIdAndUpdate(user, update, {
@@ -72,11 +72,12 @@ exports.forgotPassword = async (req, res, next) => {
 
     const mailOptions = {
       from: "<bcfinalboss@gmail.com>",
-      to: "bcfinalboss@gmail.com",
+      to: user.email,
       subject: "Reset Password",
       html: `<p>Hola ${user.name},</p> 
-    <p>Ha solicitado el cambio de contraseña</p>
+    <p>Recientemente solicitó restablecer la contraseña de su cuenta.</p>
     <p>Pulse el siguiente link: http://localhost:3000/reset/${token}</p>
+    <p>Si no solicitó un restablecimiento de contraseña, ignore este correo electrónico o responda para informarnos</p>
     <p>Saludos.</p>
 `,
     };
@@ -101,13 +102,14 @@ exports.resetPassword = async (req, res, next) => {
     resetPasswordTokenExpire: { $gt: Date.now() },
   });
   try {
-    if (tokenValid !== null) {
-      res.json({ msg: "Introduzca la nueva contraseña" });
-      next();
+    if (tokenValid === null || token !== tokenValid.resetPasswordToken ) {
+      throw new Error();
     }
+
+    return res.json({message: 'Enter de new password'});
   } catch (err) {
     res.json({
-      msg: "El token no es válido o ha expirado solicite un nuevo link",
+      message: 'The Token is not valid',
     });
   }
 };

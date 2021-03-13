@@ -23,7 +23,7 @@ module.exports = function () {
   router.post('/user/login', AuthController.login);
   router.post('/user/forgot-password', AuthController.forgotPassword);
   router.get('/reset/:token', AuthController.resetPassword);
-  router.put('/reset/:token', AuthController.resetPasswordMail);
+  router.put('/reset-password/:token', AuthController.resetPasswordMail);
 
   return router;
 };
