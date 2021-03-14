@@ -11,6 +11,7 @@ const advertsSchema = new Schema(
 
     image: {
       type: String,
+        default: 'no-image.jpg'
     },
 
     description: {
