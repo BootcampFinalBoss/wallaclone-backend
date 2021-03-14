@@ -32,7 +32,7 @@ const advertsSchema = new Schema(
 
     tags: {
       type: [String],
-      enum: [
+      /*enum: [
         'Tech',
         'Audio',
         'Lifestyle',
@@ -44,7 +44,7 @@ const advertsSchema = new Schema(
         'Home',
         'Forniture',
         'Photography',
-      ],
+      ],*/
     },
 
     user: {
