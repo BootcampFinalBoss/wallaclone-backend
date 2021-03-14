@@ -53,7 +53,13 @@ exports.getUser = async (req, res, next) => {
         next();
       }
 
-      res.json(userDetail);
+      res.json({result:{
+          name: userDetail.name,
+          username: userDetail.username,
+          email: userDetail.email,
+          avatar: userDetail.avatar,
+        }
+        });
     } else {
       res.json({ msg: "no tienes permisos" });
     }
