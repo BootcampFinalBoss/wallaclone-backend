@@ -101,17 +101,17 @@ exports.resetPassword = async (req, res, next) => {
     resetPasswordToken: token,
     resetPasswordTokenExpire: { $gt: Date.now() },
   });
-  try {
-    if (tokenValid === null || token !== tokenValid.resetPasswordToken ) {
-      throw new Error();
-    }
+    //
 
+  if (tokenValid === null || token !== tokenValid.resetPasswordToken ) {
+      res.status(401).json({message: 'The token is not valid'});
+    }else {
     return res.json({message: 'Enter de new password'});
-  } catch (err) {
-    res.json({
-      message: 'The Token is not valid',
-    });
   }
+
+
+
+
 };
 
 exports.resetPasswordMail = async (req, res, next) => {
@@ -139,14 +139,14 @@ exports.resetPasswordMail = async (req, res, next) => {
         { new: true },
         (err, resetPassword) => {
           res.json({
-            msg: "Contraseña actualizada correctamente",
+            message: "Contraseña actualizada correctamente",
             resetPassword,
           });
         }
       );
     } else {
       res.status(404).json({
-        msg: "El link no es valido o ha expirado.",
+        message: "El link no es valido o ha expirado.",
       });
     }
   } catch (err) {
