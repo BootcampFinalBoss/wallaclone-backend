@@ -51,9 +51,13 @@ exports.getAdvert = async function (req, res, next) {
     }
 
     const adverts = await Adverts.list(filter, limit, skip);
-    return Users.populate(adverts, { path: 'user' }, function (err, adverts) {
-      res.json({ result: adverts });
-    });
+    return await Users.populate(
+      adverts,
+      { path: 'user' },
+      function (err, adverts) {
+        res.json({ result: adverts });
+      },
+    );
   } catch (err) {
     next(err);
   }
@@ -66,7 +70,9 @@ exports.getAdvertById = async (req, res, next) => {
 
     const advert = await Adverts.findOne({ _id });
 
-    res.json({ result: advert });
+    await Users.populate(advert, { path: 'user' }, function (err, advert) {
+      res.json({ result: advert });
+    });
   } catch (err) {
     next(err);
   }

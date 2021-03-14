@@ -1,5 +1,6 @@
-const fs = require("fs");
-const Users = require("../models/Users");
+const fs = require('fs');
+const Adverts = require('../models/Adverts');
+const Users = require('../models/Users');
 
 /* Function createUser */
 
@@ -31,7 +32,7 @@ exports.createUser = async (req, res, next) => {
     /*Almaceno usuario en DB*/
     const user = new Users(userData);
     const userSave = await user.save();
-    res.send({ message: 'Se ha registrado correctamente'});
+    res.send({ message: 'Se ha registrado correctamente' });
     console.log(userSave);
     next();
   } catch (err) {
@@ -43,25 +44,32 @@ exports.createUser = async (req, res, next) => {
 /* Function getUser */
 exports.getUser = async (req, res, next) => {
   const { id } = req.params;
+  console.log(id);
   try {
     if (id === req.userId) {
-      const userDetail = await Users.findById(id);
+      const userDetail = await Users.findById(id).populate('adverts');
+
+      const result = {
+        name: userDetail.name,
+        username: userDetail.username,
+        email: userDetail.email,
+        avatar: userDetail.avatar,
+        adverts: userDetail.adverts,
+      };
 
       /* Comprueba que exista algun usuario*/
-      if (!userDetail) {
-        res.send(404).json({ msg: "El usuario no existe" });
+      if (!result) {
+        res.send(404).json({ msg: 'El usuario no existe' });
         next();
       }
 
-      res.json({result:{
-          name: userDetail.name,
-          username: userDetail.username,
-          email: userDetail.email,
-          avatar: userDetail.avatar,
-        }
-        });
+      console.log(result);
+
+      res.json({
+        result: result,
+      });
     } else {
-      res.json({ msg: "no tienes permisos" });
+      res.json({ msg: 'no tienes permisos' });
     }
   } catch (err) {
     next();
@@ -91,11 +99,11 @@ exports.updateUser = async (req, res, next) => {
         { new: true },
         async (err, userUpdated) => {
           res.json(userUpdated);
-        }
+        },
       );
     }
 
-    res.json({ msg: "No tienes permiso" });
+    res.json({ msg: 'No tienes permiso' });
   } catch (err) {
     next();
   }
@@ -110,7 +118,7 @@ exports.deleteUser = async (req, res, next) => {
     if (!userDelete) {
       res
         .status(404)
-        .json({ msg: "No existe el usuario en la base de datos." });
+        .json({ msg: 'No existe el usuario en la base de datos.' });
       next();
     }
 
@@ -119,12 +127,12 @@ exports.deleteUser = async (req, res, next) => {
       await Users.findByIdAndRemove(userDelete);
 
       /* Borra el usuario y la foto del avatar*/
-      res.json({ msg: "Usuario Borrado Correctamente", del: userDelete });
+      res.json({ msg: 'Usuario Borrado Correctamente', del: userDelete });
       fs.unlinkSync(`./public/images/avatar/${userDelete.avatar}`);
       return;
     }
     res.status(401).json({
-      msg: "No tienes permisos para hacer esto",
+      msg: 'No tienes permisos para hacer esto',
     });
     next();
   } catch (err) {
