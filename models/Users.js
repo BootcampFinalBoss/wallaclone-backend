@@ -47,7 +47,7 @@ const usuarioSchema = new Schema(
 
     avatar: {
       type: String,
-      default: './public/images/avatar.png',
+      default: 'avatar.png',
     },
 
     favorites: [{ type: Schema.ObjectId, ref: 'Adverts' }],
