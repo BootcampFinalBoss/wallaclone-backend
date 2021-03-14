@@ -2,6 +2,7 @@
 /* eslint-disable func-names */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable radix */
+const { findById } = require('../models/Adverts');
 const Adverts = require('../models/Adverts');
 const Users = require('../models/Users');
 
@@ -16,7 +17,7 @@ exports.getAdvert = async function (req, res, next) {
 
     // Others
     const limit = parseInt(req.query.limit || 10);
-    const skip = parseInt(req.query.skip || 10);
+    const skip = parseInt(req.query.skip || 0);
     // const sort = req.query.sort || '_id';
 
     // Search filters
@@ -49,8 +50,10 @@ exports.getAdvert = async function (req, res, next) {
       filter.type = type;
     }
 
-    const adverts = await Adverts.list(filter);
-    res.json({ result: adverts });
+    const adverts = await Adverts.list(filter, limit, skip);
+    return Users.populate(adverts, { path: 'user' }, function (err, adverts) {
+      res.json({ result: adverts });
+    });
   } catch (err) {
     next(err);
   }
@@ -80,7 +83,6 @@ exports.postAdvert = async (req, res, next) => {
     }
 
     //const advertData = req.body;
-    //console.log(advertData);
 
     // We create a document in memory
     const setAdvert = {
@@ -92,11 +94,18 @@ exports.postAdvert = async (req, res, next) => {
       user: req.userId,
     };
     const advert = new Adverts(setAdvert);
-    console.log(advert);
+
+    const user = await Users.findOneAndUpdate(
+      { _id: req.userId },
+      { $push: { adverts: advert } },
+      () => {},
+    );
+
     // We save the document in the database
     const advertSaved = await advert.save();
+    await user.save(advert);
 
-    res.send({ result: advertSaved, message: 'Anuncio Creado Correctamente' });
+    res.send({ result: advertSaved, message: 'Advert created succesfully!' });
   } catch (err) {
     next(err);
   }
@@ -136,8 +145,8 @@ exports.deleteAdvert = async (req, res, next) => {
 exports.getUserAdverts = async (req, res, next) => {
   const { id } = req.params;
   try {
-    await Adverts.find({ user: id }, function (err, advert) {
-      res.json(advert);
+    await Adverts.find({ user: id }, function (err, adverts) {
+      res.json(adverts);
     });
   } catch (err) {
     next(err);

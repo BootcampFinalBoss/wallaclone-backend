@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Users = require('./Users');
 
 const { Schema } = mongoose;
 
@@ -11,7 +12,7 @@ const advertsSchema = new Schema(
 
     image: {
       type: String,
-        default: 'no-image.jpg'
+      default: 'no-image.jpg',
     },
 
     description: {
@@ -32,24 +33,15 @@ const advertsSchema = new Schema(
 
     tags: {
       type: [String],
-      enum: [
-        'Tech',
-        'Audio',
-        'Lifestyle',
-        'Sports',
-        'Games',
-        'Gaming',
-        'Mobile',
-        'Toys',
-        'Home',
-        'Forniture',
-        'Photography',
-      ],
     },
 
     user: {
       type: Schema.Types.ObjectId,
       ref: 'Users',
+    },
+
+    reserved: {
+      type: Boolean,
     },
   },
   { timestamps: true },
@@ -57,9 +49,10 @@ const advertsSchema = new Schema(
 
 // Methods
 advertsSchema.statics.list = function (filter, limit, skip) {
-  const query = Adverts.find(filter).sort({ createdAt: -1 });
-  query.limit(limit);
-  query.skip(skip);
+  const query = Adverts.find(filter)
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .skip(skip);
   return query.exec();
 };
 
