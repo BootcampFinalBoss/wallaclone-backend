@@ -1,5 +1,6 @@
 const fs = require("fs");
 const Users = require("../models/Users");
+const Adverts = require('../models/Adverts');
 
 /* Function createUser */
 
@@ -107,6 +108,7 @@ exports.updateUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   const userDelete = await Users.findById(req.params.id);
+  console.log(userDelete);
   try {
     /* Comprobamos que exista el usuario */
     if (!userDelete) {
@@ -118,11 +120,13 @@ exports.deleteUser = async (req, res, next) => {
 
     /* Comprobamos si el usuario recibido es el mismo que el que se almacena en el token*/
     if (userDelete._id == req.userId) {
-      await Users.findByIdAndRemove(userDelete);
+      await Users.deleteMany(userDelete);
+      const prueba1 = await Adverts.deleteMany({user: userDelete});
+      console.log(prueba1);
 
       /* Borra el usuario y la foto del avatar*/
       res.json({ msg: "Usuario Borrado Correctamente", del: userDelete });
-      fs.unlinkSync(`./public/images/avatar/${userDelete.avatar}`);
+      //fs.unlinkSync(`./public/images/avatar/${userDelete.avatar}`);
       return;
     }
     res.status(401).json({
@@ -130,6 +134,6 @@ exports.deleteUser = async (req, res, next) => {
     });
     next();
   } catch (err) {
-    next();
+    next(err);
   }
 };
