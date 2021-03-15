@@ -58,6 +58,7 @@ exports.getUser = async (req, res, next) => {
           username: userDetail.username,
           email: userDetail.email,
           avatar: userDetail.avatar,
+          surname: userDetail.surname,
         }
         });
     } else {
@@ -71,7 +72,8 @@ exports.getUser = async (req, res, next) => {
 /* Function updateUser */
 
 exports.updateUser = async (req, res, next) => {
-  const { password } = req.body;
+  const { password, name } = req.body;
+  console.log(password, name);
 
   try {
     if (req.params.id === req.userId) {
