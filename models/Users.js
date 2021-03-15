@@ -50,12 +50,14 @@ const usuarioSchema = new Schema(
       default: 'avatar.png',
     },
 
+    adverts: [{ type: Schema.ObjectId, ref: 'Adverts' }],
+
     favorites: [{ type: Schema.ObjectId, ref: 'Adverts' }],
   },
 
   {
     timestamps: true,
-  }
+  },
 );
 
 // eslint-disable-next-line func-names

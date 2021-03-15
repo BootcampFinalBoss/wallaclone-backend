@@ -1,8 +1,8 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const nodemailer = require("nodemailer");
-const Users = require("../models/Users");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const Users = require('../models/Users');
 
 exports.login = async (req, res, next) => {
   const { username, password } = req.body;
@@ -11,11 +11,8 @@ exports.login = async (req, res, next) => {
   if (!user || !bcrypt.compareSync(password, user.password)) {
     res
       .status(404)
-      .send({ message: "El nombre de usuario o la contraseña es incorrecto" });
+      .send({ message: 'El nombre de usuario o la contraseña es incorrecto' });
   } else {
-    const userId = {
-      idUser: user._id,
-    };
     const token = jwt.sign(
       {
         email: user.email,
@@ -23,10 +20,10 @@ exports.login = async (req, res, next) => {
         id: user._id,
       },
       process.env.KEY_SECRET,
-      { expiresIn: "2d" }
+      { expiresIn: '2d' },
     );
 
-    res.json({ token, username, userId });
+    res.json({ token, username, userId: user._id });
   }
 };
 /* await res.status(401).json({ msg: "No existe el usuario." });
@@ -41,17 +38,17 @@ exports.login = async (req, res, next) => {
 exports.forgotPassword = async (req, res, next) => {
   const { email } = req.body;
   if (!email) {
-    res.json({ msg: "El email no puede estar vacio" });
+    res.json({ msg: 'El email no puede estar vacio' });
   }
   const user = await Users.findOne({ email });
 
   try {
     if (!user) {
-      res.status(404).json({ msg: "El usuario no existe en la BD" });
+      res.status(404).json({ msg: 'El usuario no existe en la BD' });
       next();
     }
 
-    const token = crypto.randomBytes(20).toString("hex");
+    const token = crypto.randomBytes(20).toString('hex');
 
     const update = {
       resetPasswordToken: token,
@@ -63,7 +60,7 @@ exports.forgotPassword = async (req, res, next) => {
     });
 
     const transporter = nodemailer.createTransport({
-      service: "Gmail",
+      service: 'Gmail',
       auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASS,
@@ -71,9 +68,9 @@ exports.forgotPassword = async (req, res, next) => {
     });
 
     const mailOptions = {
-      from: "<bcfinalboss@gmail.com>",
+      from: '<bcfinalboss@gmail.com>',
       to: user.email,
-      subject: "Reset Password",
+      subject: 'Reset Password',
       html: `<p>Hola ${user.name},</p> 
     <p>Recientemente solicitó restablecer la contraseña de su cuenta.</p>
     <p>Pulse el siguiente link: http://localhost:3000/reset/${token}</p>
@@ -87,7 +84,7 @@ exports.forgotPassword = async (req, res, next) => {
         console.log(err);
         res.send(500, err.message);
       } else {
-        res.status(200).send({ msg: "El correo se ha enviado correctamente" });
+        res.status(200).send({ msg: 'El correo se ha enviado correctamente' });
       }
     });
   } catch (err) {
@@ -101,17 +98,13 @@ exports.resetPassword = async (req, res, next) => {
     resetPasswordToken: token,
     resetPasswordTokenExpire: { $gt: Date.now() },
   });
-    //
+  //
 
-  if (tokenValid === null || token !== tokenValid.resetPasswordToken ) {
-      res.status(401).json({message: 'The token is not valid'});
-    }else {
-    return res.json({message: 'Enter de new password'});
+  if (tokenValid === null || token !== tokenValid.resetPasswordToken) {
+    res.status(401).json({ message: 'The token is not valid' });
+  } else {
+    return res.json({ message: 'Enter de new password' });
   }
-
-
-
-
 };
 
 exports.resetPasswordMail = async (req, res, next) => {
@@ -139,14 +132,14 @@ exports.resetPasswordMail = async (req, res, next) => {
         { new: true },
         (err, resetPassword) => {
           res.json({
-            message: "Contraseña actualizada correctamente",
+            message: 'Contraseña actualizada correctamente',
             resetPassword,
           });
-        }
+        },
       );
     } else {
       res.status(404).json({
-        message: "El link no es valido o ha expirado.",
+        message: 'El link no es valido o ha expirado.',
       });
     }
   } catch (err) {
