@@ -113,7 +113,7 @@ exports.putAdvert = async (req, res, next) => {
       new: true,
       useFindAndModify: false,
     });
-    res.json({ result: advertSaved });
+    res.json({ message: 'Advert updated succesfully!',result: advertSaved });
   } catch (err) {
     next(err);
   }
