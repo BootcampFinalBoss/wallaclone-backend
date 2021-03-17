@@ -114,7 +114,6 @@ exports.updateUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   const userDelete = await Users.findById(req.params.id);
-  console.log(userDelete);
   try {
     /* Comprobamos que exista el usuario */
     if (!userDelete) {
@@ -131,7 +130,7 @@ exports.deleteUser = async (req, res, next) => {
       console.log(prueba1);
 
       /* Borra el usuario y la foto del avatar*/
-      res.json({ msg: "Usuario Borrado Correctamente", del: userDelete });
+      res.json({ msg: "Usuario Borrado Correctamente"});
       //fs.unlinkSync(`./public/images/avatar/${userDelete.avatar}`);
       return;
     }
