@@ -81,7 +81,7 @@ exports.getAdvertById = async (req, res, next) => {
 // Create an advert --> POSt /api/adverts
 exports.postAdvert = async (req, res, next) => {
   try {
-    const { name, price, type, tags } = req.body;
+    const { name, price, type, tags, description } = req.body;
     let image = req.file;
 
     if (image) {
@@ -96,6 +96,7 @@ exports.postAdvert = async (req, res, next) => {
       price,
       type,
       tags,
+      description,
       image,
       user: req.userId,
     };
@@ -148,6 +149,7 @@ exports.deleteAdvert = async (req, res, next) => {
   }
 };
 
+/*
 exports.getUserAdverts = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -158,3 +160,4 @@ exports.getUserAdverts = async (req, res, next) => {
     next(err);
   }
 };
+*/

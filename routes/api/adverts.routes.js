@@ -40,7 +40,7 @@ router.delete("/adverts/:_id", auth, advertController.deleteAdvert);
  * GET /api/adverts-user/<_id>
  */
 
-router.get("/adverts-user/:id", advertController.getUserAdverts);
+/*router.get("/adverts-user/:id", advertController.getUserAdverts);*/
 
 /**
  * GET /api/tags
