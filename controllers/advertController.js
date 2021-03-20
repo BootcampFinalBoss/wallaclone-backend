@@ -95,7 +95,7 @@ exports.postAdvert = async (req, res, next) => {
       name,
       price,
       type,
-      tags,
+      tags: tags.split(','),
       description,
       image,
       user: req.userId,
@@ -110,6 +110,7 @@ exports.postAdvert = async (req, res, next) => {
 
     // We save the document in the database
     const advertSaved = await advert.save();
+    console.log(advertSaved);
     await user.save(advert);
 
     res.send({ result: advertSaved, message: 'Advert created succesfully!' });
@@ -129,7 +130,7 @@ exports.putAdvert = async (req, res, next) => {
       new: true,
       useFindAndModify: false,
     });
-    res.json({ message: 'Advert updated succesfully!',result: advertSaved });
+    res.json({ message: 'Advert updated succesfully!', result: advertSaved });
   } catch (err) {
     next(err);
   }
