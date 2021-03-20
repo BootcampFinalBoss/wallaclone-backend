@@ -18,7 +18,7 @@ module.exports = function () {
   );
 
   router.get('/user/:id', auth, UserController.getUser);
-  router.put('/user/:id', auth, validateUser, UserController.updateUser);
+  router.put('/user/:id', auth, UserController.updateUser);
   router.delete('/user/:id', auth, UserController.deleteUser);
   router.post('/user/login', AuthController.login);
   router.post('/user/forgot-password', AuthController.forgotPassword);

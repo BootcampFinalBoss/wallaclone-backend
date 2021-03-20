@@ -1,6 +1,8 @@
 const fs = require('fs');
 const Adverts = require('../models/Adverts');
 const Users = require('../models/Users');
+const {validateUser} = require ('../middleware/validateUser')
+
 
 /* Function createUser */
 
@@ -44,7 +46,6 @@ exports.createUser = async (req, res, next) => {
 /* Function getUser */
 exports.getUser = async (req, res, next) => {
   const { id } = req.params;
-  console.log(id);
   try {
     if (id === req.userId) {
       const userDetail = await Users.findById(id).populate('adverts');
@@ -63,7 +64,6 @@ exports.getUser = async (req, res, next) => {
         next();
       }
 
-      console.log(result);
 
       res.json({
         result: result,
@@ -79,35 +79,62 @@ exports.getUser = async (req, res, next) => {
 /* Function updateUser */
 
 exports.updateUser = async (req, res, next) => {
-  const { password, name } = req.body;
-  console.log(password, name);
+  const { name, username, surname, email } = req.body;
+  const {id} = req.params;
+  try{
 
-  try {
-    if (req.params.id === req.userId) {
-      const updatePassword = await Users.hashPassword(password);
-      await Users.findOneAndUpdate(
-        { _id: req.params.id },
-        {
-          $set: {
-            name: req.body.name,
-            username: req.body.username,
-            surname: req.body.surname,
-            email: req.body.email,
-            password: updatePassword,
-          },
-        },
 
-        { new: true },
-        async (err, userUpdated) => {
-          res.json(userUpdated);
-        },
-      );
+    const userLogged = await Users.findById(id);
+
+    let fieldToUpdate = {
+      name,
+      username,
+      surname,
+      email,
+    };
+
+    for (const [key, value] of Object.entries(fieldToUpdate)) {
+      if( userLogged.name === value){
+        delete fieldToUpdate[key];
+      }
+
+      if( userLogged.username === value){
+        delete fieldToUpdate[key];
+      }
+
+      if( userLogged.email === value){
+        delete fieldToUpdate[key];
+      }
+
+      if( userLogged.surname === value){
+        delete fieldToUpdate[key];
+      }
     }
 
-    res.json({ msg: 'No tienes permiso' });
-  } catch (err) {
-    next();
+    const userDataEmail = await Users.findOne({email: fieldToUpdate.email});
+    const userDataUsername = await Users.findOne({username: fieldToUpdate.username});
+
+    if(userDataEmail){
+      throw new Error('El email ya existe');
+    } else if(userDataUsername) {
+      throw new Error('El usuario ya existe');
+    }
+
+    const user = await Users.findByIdAndUpdate(
+        userLogged,
+        { $set: { ...fieldToUpdate } },
+        {
+          runValidators: true,
+          new : true
+        }
+    );
+
+    res.send('El usuario se actualizo correctamente');
+
+  }catch (error){
+   res.status(422).send({message:error.message});
   }
+
 };
 
 /* Function deleteUser */
