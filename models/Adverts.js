@@ -40,9 +40,12 @@ const advertsSchema = new Schema(
       ref: 'Users',
     },
 
-    reserved: {
-      type: Boolean,
+    state: {
+      type: String,
+      enum: ['reserved', 'sold'],
     },
+
+    favorites: [{ type: Schema.ObjectId, ref: 'Adverts' }],
   },
   { timestamps: true },
 );
