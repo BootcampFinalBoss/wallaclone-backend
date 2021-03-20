@@ -42,7 +42,13 @@ const advertsSchema = new Schema(
 
     reserved: {
       type: Boolean,
+        default: false,
     },
+
+      sold: {
+          type: Boolean,
+          default: false,
+      },
   },
   { timestamps: true },
 );

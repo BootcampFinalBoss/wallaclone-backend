@@ -43,6 +43,18 @@ router.delete("/adverts/:_id", auth, advertController.deleteAdvert);
 /*router.get("/adverts-user/:id", advertController.getUserAdverts);*/
 
 /**
+ * PUT /api/advert-reserved/<_id>
+ */
+
+router.put("/advert-reserved/:_id", auth, advertController.reservedAdvert);
+
+/**
+ * PUT /api/advert-sold/<_id>
+ */
+
+router.put("/advert-sold/:_id", auth, advertController.soldAdvert);
+
+/**
  * GET /api/tags
  */
 router.get("/tags", function (req, res) {

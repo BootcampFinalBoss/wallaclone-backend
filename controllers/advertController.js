@@ -149,6 +149,60 @@ exports.deleteAdvert = async (req, res, next) => {
   }
 };
 
+exports.reservedAdvert = async (req,res, next) => {
+  let {reserved} = req.body;
+  const {id} = req.params;
+
+  const advert = await Adverts.findOne(id);
+
+
+  console.log('162',advert.reserved);
+
+  advert.reserved = !advert.reserved;
+
+
+  if(advert.reserved){
+
+    advert.sold = false;
+
+    const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
+      res.json(advert);
+    });
+
+  }
+
+  const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
+    res.json(advert);
+  });
+}
+
+
+
+exports.soldAdvert = async (req,res, next) => {
+  let {sold} = req.body;
+  const {id} = req.params;
+
+  const advert = await Adverts.findOne(id);
+
+  if(!advert){
+    console.log('Fuera de aqui');
+  }
+
+  advert.sold = !advert.sold;
+
+  if(advert.sold){
+    advert.reserved = false;
+
+    const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
+      res.json(advert);
+    });
+
+  //res.json(advert);
+    console.log('Aqui3', advertUpdate);
+
+  }
+}
+
 /*
 exports.getUserAdverts = async (req, res, next) => {
   const { id } = req.params;
