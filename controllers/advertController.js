@@ -51,9 +51,13 @@ exports.getAdvert = async function (req, res, next) {
     }
 
     const adverts = await Adverts.list(filter, limit, skip);
-    return Users.populate(adverts, { path: 'user' }, function (err, adverts) {
-      res.json({ result: adverts });
-    });
+    return await Users.populate(
+      adverts,
+      { path: 'user' },
+      function (err, adverts) {
+        res.json({ result: adverts });
+      },
+    );
   } catch (err) {
     next(err);
   }
@@ -66,7 +70,9 @@ exports.getAdvertById = async (req, res, next) => {
 
     const advert = await Adverts.findOne({ _id });
 
-    res.json({ result: advert });
+    await Users.populate(advert, { path: 'user' }, function (err, advert) {
+      res.json({ result: advert });
+    });
   } catch (err) {
     next(err);
   }
@@ -75,7 +81,7 @@ exports.getAdvertById = async (req, res, next) => {
 // Create an advert --> POSt /api/adverts
 exports.postAdvert = async (req, res, next) => {
   try {
-    const { name, price, type, tags } = req.body;
+    const { name, price, type, tags, description } = req.body;
     let image = req.file;
 
     if (image) {
@@ -89,13 +95,14 @@ exports.postAdvert = async (req, res, next) => {
       name,
       price,
       type,
-      tags,
+      tags: tags.split(','),
+      description,
       image,
       user: req.userId,
     };
     const advert = new Adverts(setAdvert);
 
-    const user = await Users.findOneAndUpdate(
+    await Users.findOneAndUpdate(
       { _id: req.userId },
       { $push: { adverts: advert } },
       () => {},
@@ -103,9 +110,11 @@ exports.postAdvert = async (req, res, next) => {
 
     // We save the document in the database
     const advertSaved = await advert.save();
-    await user.save(advert);
 
-    res.send({ result: advertSaved, message: 'Advert created succesfully!' });
+    res.json({
+      result: advertSaved,
+      message: 'Advert created succesfully!',
+    });
   } catch (err) {
     next(err);
   }
@@ -122,7 +131,61 @@ exports.putAdvert = async (req, res, next) => {
       new: true,
       useFindAndModify: false,
     });
-    res.json({ result: advertSaved });
+    res.json({ message: 'Advert updated succesfully!', result: advertSaved });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Add favorite to advert --> /api/adverts/favorite/:id
+exports.advertAddFavorite = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line no-underscore-dangle
+    const advertId = req.params._id;
+    const userId = req.userId;
+
+    const advertModified = await Adverts.findByIdAndUpdate(
+      advertId,
+      { $push: { favorites: [userId] } },
+      { new: true },
+    );
+
+    await Users.findByIdAndUpdate(
+      userId,
+      { $push: { favorites: [advertId] } },
+      { new: true },
+    );
+    res.json({
+      message: 'Added favorite!',
+      result: advertModified,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Remove favorite from advert --> /api/adverts/favorite/:id
+exports.advertRemoveFavorite = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line no-underscore-dangle
+    const advertId = req.params._id;
+    const userId = req.userId;
+
+    const advertModified = await Adverts.findByIdAndUpdate(
+      advertId,
+      { $pullAll: { favorites: [userId] } },
+      { new: true },
+    );
+
+    await Users.findByIdAndUpdate(
+      userId,
+      { $pullAll: { favorites: [advertId] } },
+      { new: true },
+    );
+    res.json({
+      message: 'Removed favorite!',
+      result: advertModified,
+    });
   } catch (err) {
     next(err);
   }
@@ -142,6 +205,7 @@ exports.deleteAdvert = async (req, res, next) => {
   }
 };
 
+/*
 exports.getUserAdverts = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -152,3 +216,4 @@ exports.getUserAdverts = async (req, res, next) => {
     next(err);
   }
 };
+*/

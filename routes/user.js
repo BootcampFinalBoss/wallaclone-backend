@@ -14,11 +14,11 @@ module.exports = function () {
     '/user',
     upload('avatar').single('avatar'),
     validateUser,
-    UserController.createUser
+    UserController.createUser,
   );
 
-  router.get('/user/:id', auth, UserController.getUser);
-  router.put('/user/:id', auth, validateUser, UserController.updateUser);
+  router.get('/user/:username', auth, UserController.getUser);
+  router.put('/user/:id', auth, UserController.updateUser);
   router.delete('/user/:id', auth, UserController.deleteUser);
   router.post('/user/login', AuthController.login);
   router.post('/user/forgot-password', AuthController.forgotPassword);
