@@ -49,6 +49,11 @@ const advertsSchema = new Schema(
           type: Boolean,
           default: false,
       },
+
+  /*    state{
+        type: String,
+          enum:[default, reserved, sold]
+      }*/
   },
   { timestamps: true },
 );

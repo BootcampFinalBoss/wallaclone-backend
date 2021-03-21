@@ -153,8 +153,11 @@ exports.reservedAdvert = async (req,res, next) => {
   let {reserved} = req.body;
   const {id} = req.params;
 
-  const advert = await Adverts.findOne(id);
+  console.log(id);
 
+  const advert = await Adverts.findById(id);
+
+  console.log(id);
 
   console.log('162',advert.reserved);
 
@@ -165,15 +168,19 @@ exports.reservedAdvert = async (req,res, next) => {
 
     advert.sold = false;
 
-    const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
+    const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, (error, advert) =>{
+      if(error) console.log('error', error);
       res.json(advert);
     });
 
+  } else{
+    const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
+      res.json(advert);
+    });
   }
 
-  const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
-    res.json(advert);
-  });
+
+
 }
 
 
@@ -182,7 +189,7 @@ exports.soldAdvert = async (req,res, next) => {
   let {sold} = req.body;
   const {id} = req.params;
 
-  const advert = await Adverts.findOne(id);
+  const advert = await Adverts.findById(id);
 
   if(!advert){
     console.log('Fuera de aqui');
@@ -193,13 +200,15 @@ exports.soldAdvert = async (req,res, next) => {
   if(advert.sold){
     advert.reserved = false;
 
-    const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
+    const advertUpdate = await Adverts.findByIdAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
+      console.log(advert);
       res.json(advert);
     });
-
-  //res.json(advert);
-    console.log('Aqui3', advertUpdate);
-
+  } else{
+    const advertUpdate = await Adverts.findByIdAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
+      console.log(advert);
+      res.json(advert);
+    });
   }
 }
 

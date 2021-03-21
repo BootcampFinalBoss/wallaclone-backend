@@ -46,13 +46,13 @@ router.delete("/adverts/:_id", auth, advertController.deleteAdvert);
  * PUT /api/advert-reserved/<_id>
  */
 
-router.put("/advert-reserved/:_id", auth, advertController.reservedAdvert);
+router.put("/advert-reserved/:id", auth, advertController.reservedAdvert);
 
 /**
  * PUT /api/advert-sold/<_id>
  */
 
-router.put("/advert-sold/:_id", auth, advertController.soldAdvert);
+router.put("/advert-sold/:id", auth, advertController.soldAdvert);
 
 /**
  * GET /api/tags
