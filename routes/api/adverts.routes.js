@@ -51,22 +51,10 @@ router.delete(
 );
 
 /**
- * GET /api/adverts-user/<_id>
+ * PUT /api/advert/state/<_id>
  */
 
-/*router.get("/adverts-user/:id", advertController.getUserAdverts);*/
-
-/**
- * PUT /api/advert-reserved/<_id>
- */
-
-router.put("/advert-reserved/:id", auth, advertController.reservedAdvert);
-
-/**
- * PUT /api/advert-sold/<_id>
- */
-
-router.put("/advert-sold/:id", auth, advertController.soldAdvert);
+router.put('/adverts/state/:_id', auth, advertController.updateAdvertState);
 
 /**
  * GET /api/tags

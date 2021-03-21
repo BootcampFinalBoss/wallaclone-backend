@@ -215,78 +215,26 @@ exports.deleteAdvert = async (req, res, next) => {
   }
 };
 
-exports.reservedAdvert = async (req,res, next) => {
-  let {reserved} = req.body;
-  const {id} = req.params;
-
-  console.log(id);
-
-  const advert = await Adverts.findById(id);
-
-  console.log(id);
-
-  console.log('162',advert.reserved);
-
-  advert.reserved = !advert.reserved;
-
-
-  if(advert.reserved){
-
-    advert.sold = false;
-
-    const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, (error, advert) =>{
-      if(error) console.log('error', error);
-      res.json(advert);
-    });
-
-  } else{
-    const advertUpdate = await Adverts.findOneAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
-      res.json(advert);
-    });
-  }
-
-
-
-}
-
-
-
-exports.soldAdvert = async (req,res, next) => {
-  let {sold} = req.body;
-  const {id} = req.params;
-
-  const advert = await Adverts.findById(id);
-
-  if(!advert){
-    console.log('Fuera de aqui');
-  }
-
-  advert.sold = !advert.sold;
-
-  if(advert.sold){
-    advert.reserved = false;
-
-    const advertUpdate = await Adverts.findByIdAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
-      console.log(advert);
-      res.json(advert);
-    });
-  } else{
-    const advertUpdate = await Adverts.findByIdAndUpdate(id, {$set:{reserved: advert.reserved, sold: advert.sold}}, { new: true }, () =>{
-      console.log(advert);
-      res.json(advert);
-    });
-  }
-}
-
-/*
-exports.getUserAdverts = async (req, res, next) => {
-  const { id } = req.params;
+// Update state of an advert --> /api/adverts/state/:id
+exports.updateAdvertState = async (req, res, next) => {
   try {
-    await Adverts.find({ user: id }, function (err, adverts) {
-      res.json(adverts);
-    });
+    // eslint-disable-next-line no-underscore-dangle
+    const _id = req.params._id;
+    const newState = req.body.newState;
+
+    const advertSaved = await Adverts.findByIdAndUpdate(
+      _id,
+      { $set: { state: newState } },
+      {
+        new: true,
+        useFindAndModify: false,
+      },
+    );
+
+    console.log(advertSaved, _id, newState);
+
+    res.json({ message: 'Advert updated succesfully!', result: advertSaved });
   } catch (err) {
     next(err);
   }
 };
-*/
