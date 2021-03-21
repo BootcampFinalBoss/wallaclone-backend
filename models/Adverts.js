@@ -42,7 +42,7 @@ const advertsSchema = new Schema(
 
     state: {
       type: String,
-      enum: ['reserved', 'sold'],
+      enum: ['reserved', 'sold', 'default'],
     },
 
     favorites: [{ type: Schema.ObjectId, ref: 'Adverts' }],

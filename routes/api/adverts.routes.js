@@ -51,10 +51,10 @@ router.delete(
 );
 
 /**
- * GET /api/adverts-user/<_id>
+ * PUT /api/advert/state/<_id>
  */
 
-/*router.get("/adverts-user/:id", advertController.getUserAdverts);*/
+router.put('/adverts/state/:_id', auth, advertController.updateAdvertState);
 
 /**
  * GET /api/tags

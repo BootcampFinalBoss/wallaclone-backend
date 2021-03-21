@@ -215,15 +215,26 @@ exports.deleteAdvert = async (req, res, next) => {
   }
 };
 
-/*
-exports.getUserAdverts = async (req, res, next) => {
-  const { id } = req.params;
+// Update state of an advert --> /api/adverts/state/:id
+exports.updateAdvertState = async (req, res, next) => {
   try {
-    await Adverts.find({ user: id }, function (err, adverts) {
-      res.json(adverts);
-    });
+    // eslint-disable-next-line no-underscore-dangle
+    const _id = req.params._id;
+    const newState = req.body.newState;
+
+    const advertSaved = await Adverts.findByIdAndUpdate(
+      _id,
+      { $set: { state: newState } },
+      {
+        new: true,
+        useFindAndModify: false,
+      },
+    );
+
+    console.log(advertSaved, _id, newState);
+
+    res.json({ message: 'Advert updated succesfully!', result: advertSaved });
   } catch (err) {
     next(err);
   }
 };
-*/
