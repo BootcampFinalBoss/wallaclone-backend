@@ -18,7 +18,7 @@ exports.getAdvert = async function (req, res, next) {
     // Others
     const limit = parseInt(req.query.limit || 10);
     const skip = parseInt(req.query.skip || 0);
-    // const sort = req.query.sort || '_id';
+    const sort = req.query.sort || -1;
 
     // Search filters
     const filter = {};
@@ -50,7 +50,7 @@ exports.getAdvert = async function (req, res, next) {
       filter.type = type;
     }
 
-    const adverts = await Adverts.list(filter, limit, skip);
+    const adverts = await Adverts.list(filter, limit, skip, sort);
     return await Users.populate(
       adverts,
       { path: 'user' },
@@ -95,7 +95,7 @@ exports.postAdvert = async (req, res, next) => {
       name,
       price,
       type,
-      tags,
+      tags: tags.split(','),
       description,
       image,
       user: req.userId,
@@ -104,15 +104,19 @@ exports.postAdvert = async (req, res, next) => {
 
     const user = await Users.findOneAndUpdate(
       { _id: req.userId },
-      { $push: { adverts: advert } },
-      () => {},
+      { $push: { adverts: [advert] } },
+      { new: true },
     );
+
+    console.log(user, advert);
 
     // We save the document in the database
     const advertSaved = await advert.save();
-    await user.save(advert);
 
-    res.send({ result: advertSaved, message: 'Advert created succesfully!' });
+    res.json({
+      result: advertSaved,
+      message: 'Advert created succesfully!',
+    });
   } catch (err) {
     next(err);
   }
@@ -129,7 +133,61 @@ exports.putAdvert = async (req, res, next) => {
       new: true,
       useFindAndModify: false,
     });
-    res.json({ message: 'Advert updated succesfully!',result: advertSaved });
+    res.json({ message: 'Advert updated succesfully!', result: advertSaved });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Add favorite to advert --> /api/adverts/favorite/:id
+exports.advertAddFavorite = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line no-underscore-dangle
+    const advertId = req.params._id;
+    const userId = req.userId;
+
+    const advertModified = await Adverts.findByIdAndUpdate(
+      advertId,
+      { $push: { favorites: [userId] } },
+      { new: true },
+    );
+
+    await Users.findByIdAndUpdate(
+      userId,
+      { $push: { favorites: [advertId] } },
+      { new: true },
+    );
+    res.json({
+      message: 'Added favorite!',
+      result: advertModified,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Remove favorite from advert --> /api/adverts/favorite/:id
+exports.advertRemoveFavorite = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line no-underscore-dangle
+    const advertId = req.params._id;
+    const userId = req.userId;
+
+    const advertModified = await Adverts.findByIdAndUpdate(
+      advertId,
+      { $pullAll: { favorites: [userId] } },
+      { new: true },
+    );
+
+    await Users.findByIdAndUpdate(
+      userId,
+      { $pullAll: { favorites: [advertId] } },
+      { new: true },
+    );
+    res.json({
+      message: 'Removed favorite!',
+      result: advertModified,
+    });
   } catch (err) {
     next(err);
   }
@@ -139,8 +197,16 @@ exports.deleteAdvert = async (req, res, next) => {
   try {
     // eslint-disable-next-line no-underscore-dangle
     const _id = req.params._id;
+    const userId = req.body.userId;
 
     const advertDeleted = await Adverts.deleteOne({ _id });
+
+    await Users.findByIdAndUpdate(
+      userId,
+      { $pullAll: { adverts: [_id], favorites: [_id] } },
+      { new: true },
+    );
+
     console.log(advertDeleted);
 
     res.send({ message: 'Advert deleted succesfully!', result: advertDeleted });

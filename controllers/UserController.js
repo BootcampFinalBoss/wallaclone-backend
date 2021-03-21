@@ -1,8 +1,7 @@
 const fs = require('fs');
 const Adverts = require('../models/Adverts');
 const Users = require('../models/Users');
-const {validateUser} = require ('../middleware/validateUser')
-
+const { validateUser } = require('../middleware/validateUser');
 
 /* Function createUser */
 
@@ -45,32 +44,31 @@ exports.createUser = async (req, res, next) => {
 
 /* Function getUser */
 exports.getUser = async (req, res, next) => {
-  const { id } = req.params;
+  const { username } = req.params;
+  console.log(username);
   try {
-    if (id === req.userId) {
-      const userDetail = await Users.findById(id).populate('adverts');
+    const userDetail = await Users.findOne({ username })
+      .populate('adverts')
+      .populate('favorites');
 
-      const result = {
-        name: userDetail.name,
-        username: userDetail.username,
-        email: userDetail.email,
-        avatar: userDetail.avatar,
-        adverts: userDetail.adverts,
-      };
+    const result = {
+      name: userDetail.name,
+      username: userDetail.username,
+      email: userDetail.email,
+      avatar: userDetail.avatar,
+      adverts: userDetail.adverts,
+      favorites: userDetail.favorites,
+    };
 
-      /* Comprueba que exista algun usuario*/
-      if (!result) {
-        res.send(404).json({ msg: 'El usuario no existe' });
-        next();
-      }
-
-
-      res.json({
-        result: result,
-      });
-    } else {
-      res.json({ msg: 'no tienes permisos' });
+    /* Comprueba que exista algun usuario*/
+    if (!result) {
+      res.send(404).json({ msg: 'El usuario no existe' });
+      next();
     }
+
+    res.json({
+      result: result,
+    });
   } catch (err) {
     next();
   }
@@ -80,10 +78,8 @@ exports.getUser = async (req, res, next) => {
 
 exports.updateUser = async (req, res, next) => {
   const { name, username, surname, email } = req.body;
-  const {id} = req.params;
-  try{
-
-
+  const { id } = req.params;
+  try {
     const userLogged = await Users.findById(id);
 
     let fieldToUpdate = {
@@ -94,47 +90,47 @@ exports.updateUser = async (req, res, next) => {
     };
 
     for (const [key, value] of Object.entries(fieldToUpdate)) {
-      if( userLogged.name === value){
+      if (userLogged.name === value) {
         delete fieldToUpdate[key];
       }
 
-      if( userLogged.username === value){
+      if (userLogged.username === value) {
         delete fieldToUpdate[key];
       }
 
-      if( userLogged.email === value){
+      if (userLogged.email === value) {
         delete fieldToUpdate[key];
       }
 
-      if( userLogged.surname === value){
+      if (userLogged.surname === value) {
         delete fieldToUpdate[key];
       }
     }
 
-    const userDataEmail = await Users.findOne({email: fieldToUpdate.email});
-    const userDataUsername = await Users.findOne({username: fieldToUpdate.username});
+    const userDataEmail = await Users.findOne({ email: fieldToUpdate.email });
+    const userDataUsername = await Users.findOne({
+      username: fieldToUpdate.username,
+    });
 
-    if(userDataEmail){
+    if (userDataEmail) {
       throw new Error('El email ya existe');
-    } else if(userDataUsername) {
+    } else if (userDataUsername) {
       throw new Error('El usuario ya existe');
     }
 
     const user = await Users.findByIdAndUpdate(
-        userLogged,
-        { $set: { ...fieldToUpdate } },
-        {
-          runValidators: true,
-          new : true
-        }
+      userLogged,
+      { $set: { ...fieldToUpdate } },
+      {
+        runValidators: true,
+        new: true,
+      },
     );
 
     res.send('El usuario se actualizo correctamente');
-
-  }catch (error){
-   res.status(422).send({message:error.message});
+  } catch (error) {
+    res.status(422).send({ message: error.message });
   }
-
 };
 
 /* Function deleteUser */
@@ -153,11 +149,11 @@ exports.deleteUser = async (req, res, next) => {
     /* Comprobamos si el usuario recibido es el mismo que el que se almacena en el token*/
     if (userDelete._id == req.userId) {
       await Users.deleteMany(userDelete);
-      const prueba1 = await Adverts.deleteMany({user: userDelete});
+      const prueba1 = await Adverts.deleteMany({ user: userDelete });
       console.log(prueba1);
 
       /* Borra el usuario y la foto del avatar*/
-      res.json({ msg: "Usuario Borrado Correctamente"});
+      res.json({ msg: 'Usuario Borrado Correctamente' });
       //fs.unlinkSync(`./public/images/avatar/${userDelete.avatar}`);
       return;
     }
