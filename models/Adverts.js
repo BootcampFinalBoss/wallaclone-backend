@@ -51,9 +51,9 @@ const advertsSchema = new Schema(
 );
 
 // Methods
-advertsSchema.statics.list = function (filter, limit, skip) {
+advertsSchema.statics.list = function (filter, limit, skip, sort) {
   const query = Adverts.find(filter)
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: sort })
     .limit(limit)
     .skip(skip);
   return query.exec();

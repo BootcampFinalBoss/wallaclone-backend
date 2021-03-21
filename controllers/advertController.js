@@ -18,7 +18,7 @@ exports.getAdvert = async function (req, res, next) {
     // Others
     const limit = parseInt(req.query.limit || 10);
     const skip = parseInt(req.query.skip || 0);
-    // const sort = req.query.sort || '_id';
+    const sort = req.query.sort || -1;
 
     // Search filters
     const filter = {};
@@ -50,7 +50,7 @@ exports.getAdvert = async function (req, res, next) {
       filter.type = type;
     }
 
-    const adverts = await Adverts.list(filter, limit, skip);
+    const adverts = await Adverts.list(filter, limit, skip, sort);
     return await Users.populate(
       adverts,
       { path: 'user' },
