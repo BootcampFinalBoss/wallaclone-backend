@@ -102,11 +102,13 @@ exports.postAdvert = async (req, res, next) => {
     };
     const advert = new Adverts(setAdvert);
 
-    await Users.findOneAndUpdate(
+    const user = await Users.findOneAndUpdate(
       { _id: req.userId },
-      { $push: { adverts: advert } },
-      () => {},
+      { $push: { adverts: [advert] } },
+      { new: true },
     );
+
+    console.log(user, advert);
 
     // We save the document in the database
     const advertSaved = await advert.save();
@@ -195,8 +197,16 @@ exports.deleteAdvert = async (req, res, next) => {
   try {
     // eslint-disable-next-line no-underscore-dangle
     const _id = req.params._id;
+    const userId = req.body.userId;
 
     const advertDeleted = await Adverts.deleteOne({ _id });
+
+    await Users.findByIdAndUpdate(
+      userId,
+      { $pullAll: { adverts: [_id], favorites: [_id] } },
+      { new: true },
+    );
+
     console.log(advertDeleted);
 
     res.send({ message: 'Advert deleted succesfully!', result: advertDeleted });
