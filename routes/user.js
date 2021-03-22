@@ -17,7 +17,7 @@ module.exports = function () {
     UserController.createUser,
   );
 
-  router.get('/user/:username', auth, UserController.getUser);
+  router.get('/user/:username', UserController.getUser);
   router.put('/user/:id', auth, UserController.updateUser);
   router.delete('/user/:id', auth, UserController.deleteUser);
   router.post('/user/login', AuthController.login);
