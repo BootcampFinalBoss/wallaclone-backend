@@ -56,6 +56,7 @@ exports.getUser = async (req, res, next) => {
       username: userDetail.username,
       email: userDetail.email,
       avatar: userDetail.avatar,
+      surname: userDetail.surname,
       adverts: userDetail.adverts,
       favorites: userDetail.favorites,
     };
@@ -137,6 +138,7 @@ exports.updateUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   const userDelete = await Users.findById(req.params.id);
+  console.log(userDelete._id, req.userId);
   try {
     /* Comprobamos que exista el usuario */
     if (!userDelete) {

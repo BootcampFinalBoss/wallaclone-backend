@@ -8,6 +8,7 @@ exports.login = async (req, res, next) => {
   const { username, password } = req.body;
   const user = await Users.findOne({ username });
 
+
   if (!user || !bcrypt.compareSync(password, user.password)) {
     res
       .status(404)
@@ -36,6 +37,7 @@ exports.login = async (req, res, next) => {
 /* Función Reset Password */
 
 exports.forgotPassword = async (req, res, next) => {
+  const urlReset = process.env._URL_RESET_PASS;
   const { email } = req.body;
   if (!email) {
     res.json({ msg: 'El email no puede estar vacio' });
