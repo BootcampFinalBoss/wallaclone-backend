@@ -53,6 +53,7 @@ exports.getUser = async (req, res, next) => {
 
     const result = {
       name: userDetail.name,
+      surname: userDetail.surname,
       username: userDetail.username,
       email: userDetail.email,
       avatar: userDetail.avatar,
