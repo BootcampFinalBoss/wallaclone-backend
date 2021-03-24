@@ -8,7 +8,6 @@ exports.login = async (req, res, next) => {
   const { username, password } = req.body;
   const user = await Users.findOne({ username });
 
-
   if (!user || !bcrypt.compareSync(password, user.password)) {
     res
       .status(404)
@@ -74,16 +73,15 @@ exports.forgotPassword = async (req, res, next) => {
       to: user.email,
       subject: 'Reset Password',
       html: `<p>Hola ${user.name},</p> 
-    <p>Recientemente solicitó restablecer la contraseña de su cuenta.</p>
-    <p>Pulse el siguiente link: ${urlReset}/reset/${token}</p>
-    <p>Si no solicitó un restablecimiento de contraseña, ignore este correo electrónico o responda para informarnos</p>
-    <p>Saludos.</p>
-`,
+      <p>Recientemente solicitó restablecer la contraseña de su cuenta.</p>
+      <p>Pulse el siguiente link: ${urlReset}/reset/${token}</p>
+      <p>Si no solicitó un restablecimiento de contraseña, ignore este correo electrónico o responda para informarnos</p>
+      <p>Saludos.</p>
+    `,
     };
 
     transporter.sendMail(mailOptions, (err, info) => {
       if (err) {
-        console.log(err);
         res.send(500, err.message);
       } else {
         res.status(200).send({ msg: 'El correo se ha enviado correctamente' });
