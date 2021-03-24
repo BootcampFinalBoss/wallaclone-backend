@@ -6,6 +6,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const indexRouter = require('./routes/user');
 const auth = require('./middleware/auth');
+const fs = require('fs');
 
 // Loading environmet variables
 require('dotenv').config();
@@ -27,6 +28,12 @@ app.use(
     extended: true,
   }),
 );
+
+app.get('/', function (req, res) {
+  var path = __dirname + '../readme.md';
+  var file = fs.readFileSync(path, 'utf8');
+  res.send(marked(file.toString()));
+});
 
 app.use('/api', indexRouter());
 

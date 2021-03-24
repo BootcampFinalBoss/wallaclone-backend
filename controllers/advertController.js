@@ -80,6 +80,12 @@ exports.getAdvertById = async (req, res, next) => {
 
 // Create an advert --> POSt /api/adverts
 exports.postAdvert = async (req, res, next) => {
+  const cloudinary = require('cloudinary').v2;
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
   try {
     const { name, price, type, tags, description } = req.body;
     let image = req.file;
@@ -88,6 +94,19 @@ exports.postAdvert = async (req, res, next) => {
       image = req.file.filename;
     }
 
+    const path = req.file.path;
+
+    await cloudinary.uploader.upload(
+      path,
+      { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
+      function (err, imageUpload) {
+        if (err) return res.send(err);
+        // remove file from server
+        const fs = require('fs');
+        fs.unlinkSync(path);
+        // return image details
+      },
+    );
     //const advertData = req.body;
 
     // We create a document in memory
@@ -108,8 +127,6 @@ exports.postAdvert = async (req, res, next) => {
       { new: true },
     );
 
-    console.log(user, advert);
-
     // We save the document in the database
     const advertSaved = await advert.save();
 
@@ -124,15 +141,44 @@ exports.postAdvert = async (req, res, next) => {
 
 // Update an advert --> /api/adverts/:id
 exports.putAdvert = async (req, res, next) => {
+  const cloudinary = require('cloudinary').v2;
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
   try {
     // eslint-disable-next-line no-underscore-dangle
     const _id = req.params._id;
     const advertData = req.body;
+    let image = req.file;
 
-    const advertSaved = await Adverts.findByIdAndUpdate({ _id }, advertData, {
-      new: true,
-      useFindAndModify: false,
-    });
+    if (image) {
+      image = req.file.filename;
+    }
+
+    const path = req.file.path;
+
+    await cloudinary.uploader.upload(
+      path,
+      { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
+      function (err, imageUpload) {
+        if (err) return res.send(err);
+        // remove file from server
+        const fs = require('fs');
+        fs.unlinkSync(path);
+        // return image details
+      },
+    );
+
+    const advertSaved = await Adverts.findByIdAndUpdate(
+      { _id },
+      { ...advertData, image },
+      {
+        new: true,
+        useFindAndModify: false,
+      },
+    );
     res.json({ message: 'Advert updated succesfully!', result: advertSaved });
   } catch (err) {
     next(err);
@@ -207,8 +253,6 @@ exports.deleteAdvert = async (req, res, next) => {
       { new: true },
     );
 
-    console.log(advertDeleted);
-
     res.send({ message: 'Advert deleted succesfully!', result: advertDeleted });
   } catch (err) {
     next(err);
@@ -230,8 +274,6 @@ exports.updateAdvertState = async (req, res, next) => {
         useFindAndModify: false,
       },
     );
-
-    console.log(advertSaved, _id, newState);
 
     res.json({ message: 'Advert updated succesfully!', result: advertSaved });
   } catch (err) {

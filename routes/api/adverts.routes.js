@@ -29,7 +29,12 @@ router.post(
 /**
  * PUT /api/adverts/<_id>
  */
-router.put('/adverts/:_id', auth, advertController.putAdvert);
+router.put(
+  '/adverts/:_id',
+  auth,
+  upload('advert').single('image'),
+  advertController.putAdvert,
+);
 
 /**
  * DELETE /api/adverts/<_id>

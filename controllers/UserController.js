@@ -34,7 +34,6 @@ exports.createUser = async (req, res, next) => {
     const user = new Users(userData);
     const userSave = await user.save();
     res.send({ message: 'Se ha registrado correctamente' });
-    console.log(userSave);
     next();
   } catch (err) {
     //res.status(404).send({ message: 'Ha ocurrido un error durante el registro '});
@@ -45,7 +44,6 @@ exports.createUser = async (req, res, next) => {
 /* Function getUser */
 exports.getUser = async (req, res, next) => {
   const { username } = req.params;
-  console.log(username);
   try {
     const userDetail = await Users.findOne({ username })
       .populate('adverts')
@@ -139,7 +137,6 @@ exports.updateUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   const userDelete = await Users.findById(req.params.id);
-  console.log(userDelete._id, req.userId);
   try {
     /* Comprobamos que exista el usuario */
     if (!userDelete) {
@@ -153,7 +150,6 @@ exports.deleteUser = async (req, res, next) => {
     if (userDelete._id == req.userId) {
       await Users.deleteMany(userDelete);
       const prueba1 = await Adverts.deleteMany({ user: userDelete });
-      console.log(prueba1);
 
       /* Borra el usuario y la foto del avatar*/
       res.json({ msg: 'Usuario Borrado Correctamente' });
