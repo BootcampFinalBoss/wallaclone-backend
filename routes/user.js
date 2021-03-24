@@ -9,7 +9,6 @@ const { validateUser } = require('../middleware/validateUser');
 
 module.exports = function () {
   /* Routes CRUD User */
-
   router.post(
     '/user',
     upload('avatar').single('avatar'),

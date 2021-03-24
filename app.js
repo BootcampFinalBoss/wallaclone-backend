@@ -4,7 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
-const indexRouter = require('./routes/user');
+const userRouter = require('./routes/user');
+const indexRouter = require('./routes/');
 const auth = require('./middleware/auth');
 const fs = require('fs');
 
@@ -29,13 +30,9 @@ app.use(
   }),
 );
 
-app.get('/', function (req, res) {
-  var path = __dirname + '../readme.md';
-  var file = fs.readFileSync(path, 'utf8');
-  res.send(marked(file.toString()));
-});
+app.use('/', indexRouter());
 
-app.use('/api', indexRouter());
+app.use('/api', userRouter());
 
 /**
  * API Routes
