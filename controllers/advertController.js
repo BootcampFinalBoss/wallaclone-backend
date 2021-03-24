@@ -80,14 +80,39 @@ exports.getAdvertById = async (req, res, next) => {
 
 // Create an advert --> POSt /api/adverts
 exports.postAdvert = async (req, res, next) => {
+  const cloudinary = require('cloudinary').v2
+  cloudinary.config({
+    cloud_name: 'diregndkr',
+    api_key: '939822411999844',
+    api_secret: '8Fx1_cXw-Q1GGD_vwFAartWWR0I'
+  })
   try {
+
     const { name, price, type, tags, description } = req.body;
     let image = req.file;
 
     if (image) {
       image = req.file.filename;
     }
+    console.log(image);
 
+    const path = req.file.path
+    const uniqueFilename = new Date().toISOString()
+    console.log('Unique', uniqueFilename);
+
+    await cloudinary.uploader.upload(
+        path,
+        { public_id: `home/${image}`, tags: `advert` }, // directory and tags are optional
+        function(err, imageUpload) {
+          console.log(imageUpload);
+          if (err) return res.send(err)
+          console.log('file uploaded to Cloudinary')
+          // remove file from server
+          const fs = require('fs')
+          fs.unlinkSync(path)
+          // return image details
+        }
+    )
     //const advertData = req.body;
 
     // We create a document in memory
