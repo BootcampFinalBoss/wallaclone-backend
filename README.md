@@ -96,7 +96,7 @@ GET --> /api/adverts
 
 GET --> /api/adverts/\_id
 
-- Example: http://localhost:3000/api/adverts/5ffeb60f3ab3af260d351b45
+- Example: http://localhost:5000/api/adverts/5ffeb60f3ab3af260d351b45
 
 ```
 {
@@ -118,7 +118,7 @@ GET --> /api/adverts/\_id
 
 ### Paginated Results
 
-- Example: http://localhost:3000/api/adverts?limit=4&skip=0
+- Example: http://localhost:5000/api/adverts?limit=4&skip=0
 
 ```
 - After a request for all ads, we will get a paginated result of 10 in 10 ads.
@@ -131,7 +131,7 @@ GET --> /api/adverts/\_id
 
 We can apply four different search filters.:
 
-- name: http://localhost:3000/api/adverts?name=Super+Bike
+- name: http://localhost:5000/api/adverts?name=Super+Bike
 
 ```
 [
@@ -150,7 +150,7 @@ We can apply four different search filters.:
 ]
 ```
 
-- tag: http://localhost:3000/api/adverts?tag=motor
+- tag: http://localhost:5000/api/adverts?tag=motor
 
 ```
 [
@@ -181,7 +181,7 @@ We can apply four different search filters.:
 ]
 ```
 
-- onsale: http://localhost:3000/api/adverts?onsale=false
+- onsale: http://localhost:5000/api/adverts?onsale=false
 
 ```
 [
@@ -202,18 +202,18 @@ We can apply four different search filters.:
 - price and price range:
 
   - 1000 will looks for ads with an equal price as the assigned:
-    http://localhost:3000/api/adverts?price=1000
+    http://localhost:5000/api/adverts?price=1000
 
   - -1000 will look for ads that have a price less than 1000:
-    http://localhost:3000/api/adverts?price=-1000
+    http://localhost:5000/api/adverts?price=-1000
   - 10000- will look for ads that have a price higher than 1000:
-    http://localhost:3000/api/adverts?price=1000-
+    http://localhost:5000/api/adverts?price=1000-
 
   - 100-1000 will look for ads that have a price between 100 and 1000:
-    http://localhost:3000/api/adverts?price=100-5000
+    http://localhost:5000/api/adverts?price=100-5000
 
   - This is a GET request with all search parameters, result limits and order:
-    http://localhost:3000/api/adverts?name=iphone&sort=price&price=-1200&onsale=true&tag=mobile&limit=2&skip=0
+    http://localhost:5000/api/adverts?name=iphone&sort=price&price=-1200&onsale=true&tag=mobile&limit=2&skip=0
 
 ### Sort Adverts by name, price, tags
 
@@ -221,7 +221,7 @@ We can apply four different search filters.:
 - This example will show the results in alphabetical order:
 
 ```
-http://localhost:3000/api/adverts?sort=name
+http://localhost:5000/api/adverts?sort=name
 ```
 
 
@@ -229,7 +229,7 @@ http://localhost:3000/api/adverts?sort=name
 
 POST --> /api/adverts
 
-- Example: http://localhost:3000/api/adverts/
+- Example: http://localhost:5000/api/adverts/
 
 * body: { name: 'Jeep', price: 4500, onsale: true, ... }
 
@@ -251,7 +251,7 @@ POST --> /api/adverts
 
 PUT -> /api/adverts/<\_id>
 
-- Example: http://localhost:3000/api/adverts/5ffec6f6bb78932c9e6243af
+- Example: http://localhost:5000/api/adverts/5ffec6f6bb78932c9e6243af
 
 * body: { price: 5000 }
 
@@ -273,7 +273,7 @@ PUT -> /api/adverts/<\_id>
 
 DELETE -> /api/adverts/<\_id>
 
-- Example: http://localhost:3000/api/adverts/5ffec6f6bb78932c9e6243af
+- Example: http://localhost:5000/api/adverts/5ffec6f6bb78932c9e6243af
 
 ```
 Returns: 'HTTP Code 2000'
@@ -284,21 +284,13 @@ Message on console: 'Advert deleted succesfully!'
 
 POST --> /api/user
 
-- Example: http://localhost:3000/api/adverts/
+- Example: http://localhost:5000/api/user/
 
-* body: { name: 'Jeep', price: 4500, onsale: true, ... }
+* body: { name: 'Jhon', surname: 'Doe', ... }
 
 ```
 {
-    "result": {
-        "tags": [],
-        "_id": "5ffec6f6bb78932c9e6243af",
-        "name": "Jeep",
-        "onsale": true,
-        "price": 4500,
-        "photo": "jeep.jpg",
-        "__v": 0
-    }
+    "message": "Se ha registrado correctamente"
 }
 ```
 
@@ -306,66 +298,33 @@ POST --> /api/user
 
 PUT -> /api/user/<\_id>
 
-- Example: http://localhost:3000/api/adverts/5ffec6f6bb78932c9e6243af
+- Example: http://localhost:5000/api/users/5ffec6f6bb78932c9e6243af
 
-* body: { price: 5000 }
+* body: { name: 'Other name', surname: 'Other surname', ... }
 
 ```
-{
-    "result": {
-        "tags": [],
-        "_id": "5ffec6f6bb78932c9e6243af",
-        "name": "Jeep",
-        "onsale": true,
-        "price": 5000,
-        "photo": "jeep.jpg",
-        "__v": 0
-    }
-}
 ```
 
 ## Delete an user
 
 DELETE -> /api/user/<\_id>
 
-- Example: http://localhost:3000/api/adverts/5ffec6f6bb78932c9e6243af
+- Example: http://localhost:5000/api/users/5ffec6f6bb78932c9e6243af
 
 ```
 Returns: 'HTTP Code 200'
-Message on console: 'Advert deleted succesfully!'
+Message on console: 'User has been deleted succesfully!'
 ```
 
 
 ## Website Routes
 
-If we visit the following URL: http://localhost:3000/adverts , we will get all ads.  In adittion we can apply the same search criteria as in the API.
+If we visit the following URL: http://localhost:5000/adverts , we will get all ads.  In adittion we can apply the same search criteria as in the API.
 
 ```
-http://localhost:3000/adverts?skip=1&limit=2&sort=name&tag=lifestyle
+http://localhost:5000/adverts?skip=1&limit=2&sort=name&tag=lifestyle
 ```
 
-## Upload images
-
-POST -> /api/adverts/uploads
-
-- body: { key: image, value: (Select Files) }
-
-We can upload images to our API, which will be stored in the images folder through the following url:
-
-```
-http://localhost:3000/api/adverts/upload
-```
-
-### View stored images
-
-We will be able to access the stored images from the browser.
-
-- Example: http://localhost:3000/images/superbike.jpg
-
-```
-http://localhost:3000/images/<sourceName>
-
-```
 
 ## Author
 
