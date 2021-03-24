@@ -37,7 +37,7 @@ exports.login = async (req, res, next) => {
 /* Función Reset Password */
 
 exports.forgotPassword = async (req, res, next) => {
-  const urlReset = process.env._URL_RESET_PASS;
+  const urlReset = process.env.URL_RESET_PASS;
   const { email } = req.body;
   if (!email) {
     res.json({ msg: 'El email no puede estar vacio' });
@@ -75,7 +75,7 @@ exports.forgotPassword = async (req, res, next) => {
       subject: 'Reset Password',
       html: `<p>Hola ${user.name},</p> 
     <p>Recientemente solicitó restablecer la contraseña de su cuenta.</p>
-    <p>Pulse el siguiente link: http://localhost:3000/reset/${token}</p>
+    <p>Pulse el siguiente link: ${urlReset}/reset/${token}</p>
     <p>Si no solicitó un restablecimiento de contraseña, ignore este correo electrónico o responda para informarnos</p>
     <p>Saludos.</p>
 `,
