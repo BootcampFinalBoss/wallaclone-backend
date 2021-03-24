@@ -82,9 +82,9 @@ exports.getAdvertById = async (req, res, next) => {
 exports.postAdvert = async (req, res, next) => {
   const cloudinary = require('cloudinary').v2;
   cloudinary.config({
-    cloud_name: 'diregndkr',
-    api_key: '939822411999844',
-    api_secret: '8Fx1_cXw-Q1GGD_vwFAartWWR0I',
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
   });
   try {
     const { name, price, type, tags, description } = req.body;
@@ -98,7 +98,7 @@ exports.postAdvert = async (req, res, next) => {
 
     await cloudinary.uploader.upload(
       path,
-      { public_id: `home/${image}`, tags: `advert` }, // directory and tags are optional
+      { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
       function (err, imageUpload) {
         if (err) return res.send(err);
         // remove file from server
@@ -143,9 +143,9 @@ exports.postAdvert = async (req, res, next) => {
 exports.putAdvert = async (req, res, next) => {
   const cloudinary = require('cloudinary').v2;
   cloudinary.config({
-    cloud_name: 'diregndkr',
-    api_key: '939822411999844',
-    api_secret: '8Fx1_cXw-Q1GGD_vwFAartWWR0I',
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
   });
   try {
     // eslint-disable-next-line no-underscore-dangle
@@ -161,7 +161,7 @@ exports.putAdvert = async (req, res, next) => {
 
     await cloudinary.uploader.upload(
       path,
-      { public_id: `home/${image}`, tags: `advert` }, // directory and tags are optional
+      { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
       function (err, imageUpload) {
         if (err) return res.send(err);
         // remove file from server
