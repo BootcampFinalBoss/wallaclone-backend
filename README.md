@@ -56,6 +56,20 @@ npm run start
 npm run dev
 ```
 
+## Authentication
+In this version of the API, the routes are protected by JWT.
+- To be able to access the routes, first we must make a POST with the email and password  to the following address:
+```
+  http://localhost:5000/api/
+```
+- The next step is to add the token that returns the "POST" to "/api" in the HEADER of each request we want to have access to the different API routes.
+```
+     key          value
+Authorization:   <token>
+``` 
+
+- In addition, in each request we will be able to see the ID of the user who is logged in.
+
 ## API Methods
 
 ### List of all adverts
@@ -65,38 +79,29 @@ GET --> /api/adverts
 **An example of an expected response in JSON format.**
 
 ```
-[
-  {
+{
+  "result": {
     "tags": [
-        "mobile",
-        "work"
+      "mobile",
+      "work"
       ],
-    "_id": "5ffd9a82d2a7011c761b3d35",
-    "name": "IphoneX",
-    "onsale": true,
-    "price": 850,
-    "photo": "iphoneX.jpg",
-    "__v": 0
-    },
-    {
-    "tags": [
-        "lifestyle"
-      ],
-    "_id": "5ffd9a82d2a7011c761b3d36",
-    "name": "Snow Table",
-    "onsale": false,
-    "price": 200,
-    "photo": "table.jpg",
-    "__v": 0
-  },
-]
+    "createdAt": "2021-03-24T23:05:44.658Z",
+    "description": "Nintendo Switch de segunda mano",
+    "name": "Nitendo Switch"
+    "type": "sell",
+    "price": 230,
+    "image": "http://res.cloudinary.com/diregndkr/image/upload/v1616612196/advert/image-1616627144130}",
+   "__v": 0
+    "_id": _id: "605bc5c869841300155a1477",
+   }
+}
 ```
 
 ## Get an advert
 
 GET --> /api/adverts/\_id
 
-- Example: http://localhost:5000/api/adverts/5ffeb60f3ab3af260d351b45
+- Example: http://localhost:5000/api/adverts/605bc5c869841300155a1477
 
 ```
 {
@@ -105,12 +110,14 @@ GET --> /api/adverts/\_id
       "mobile",
       "work"
       ],
-    "_id": "5ffeb60f3ab3af260d351b45",
-    "name": "IphoneX",
-    "onsale": true,
-    "price": 850,
-    photo": "iphoneX.jpg",
+    "createdAt": "2021-03-24T23:05:44.658Z",
+    "description": "Nintendo Switch de segunda mano",
+    "name": "Nitendo Switch"
+    "type": "sell",
+    "price": 230,
+    "image": "http://res.cloudinary.com/diregndkr/image/upload/v1616612196/advert/image-1616627144130}",
    "__v": 0
+    "_id": _id: "605bc5c869841300155a1477",
    }
 }
 ```
@@ -142,9 +149,10 @@ We can apply four different search filters.:
     ],
     "_id": "6000a39df385c8396f484de5",
     "name": "Super Bike",
-    "onsale": true,
+    "description": "Some description."
+    "type": "sell",
     "price": 5000,
-    "photo": "moto.jpg",
+    "image": "moto.jpg",
    "__v": 0
   }
 ]
@@ -161,9 +169,10 @@ We can apply four different search filters.:
     ],
     "_id": "6000a39df385c8396f484de5",
     "name": "Super Bike",
-    "onsale": true,
+    "type": "sell",
     "price": 5000,
-    "photo": "moto.jpg",
+    "description": "Some description."
+    "image": "moto.jpg",
     "__v": 0
   },
   {
@@ -173,15 +182,16 @@ We can apply four different search filters.:
     ],
     "_id": "6000a39df385c8396f484de6",
     "name": "Mustang GT",
-    "onsale": true,
+    "description": "Some description.",
+    "type": "sell",
     "price": 32000,
-    "photo": "mustang.jpg",
+    "image": "mustang.jpg",
     "__v": 0
   }
 ]
 ```
 
-- onsale: http://localhost:5000/api/adverts?onsale=false
+- Type: http://localhost:5000/api/adverts?type=false
 
 ```
 [
@@ -191,7 +201,8 @@ We can apply four different search filters.:
     ],
     "_id": "6000a39df385c8396f484de4",
     "name": "Snow Table",
-    "onsale": false,
+    "description": "Some description."
+    "type": "sell",
     "price": 200,
     "photo": "table.jpg",
     "__v": 0
@@ -199,7 +210,7 @@ We can apply four different search filters.:
 ]
 ```
 
-- price and price range:
+- Price and Price range:
 
   - 1000 will looks for ads with an equal price as the assigned:
     http://localhost:5000/api/adverts?price=1000
@@ -239,9 +250,10 @@ POST --> /api/adverts
         "tags": [],
         "_id": "5ffec6f6bb78932c9e6243af",
         "name": "Jeep",
-        "onsale": true,
+        "description": "Some description."
+        "type": "sell",
         "price": 4500,
-        "photo": "jeep.jpg",
+        "image": "jeep.jpg",
         "__v": 0
     }
 }
@@ -261,9 +273,10 @@ PUT -> /api/adverts/<\_id>
         "tags": [],
         "_id": "5ffec6f6bb78932c9e6243af",
         "name": "Jeep",
-        "onsale": true,
-        "price": 5000,
-        "photo": "jeep.jpg",
+        "description": "Some description."
+        "type": "sell",
+        "price": 4500,
+        "image": "jeep.jpg",
         "__v": 0
     }
 }
