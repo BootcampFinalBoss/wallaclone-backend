@@ -88,7 +88,7 @@ exports.postAdvert = async (req, res, next) => {
   });
   try {
     const { name, price, type, tags, description } = req.body;
-    let image = req.file;
+    let image = req.file || null;
     let path;
 
     if (image) {
@@ -96,17 +96,17 @@ exports.postAdvert = async (req, res, next) => {
       path = req.file.path;
     }
 
-    if(path){
+    if (path && image) {
       await cloudinary.uploader.upload(
-          path,
-          { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
-          function (err, imageUpload) {
-            if (err) return res.send(err);
-            // remove file from server
-            const fs = require('fs');
-            fs.unlinkSync(path);
-            // return image details
-          },
+        path,
+        { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
+        function (err, imageUpload) {
+          if (err) return res.send(err);
+          // remove file from server
+          const fs = require('fs');
+          fs.unlinkSync(path);
+          // return image details
+        },
       );
     }
 
@@ -154,29 +154,34 @@ exports.putAdvert = async (req, res, next) => {
     // eslint-disable-next-line no-underscore-dangle
     const _id = req.params._id;
     const advertData = req.body;
-    let image = req.file;
+    const oldAdvertData = await Adverts.findById(_id);
+    let image = req.file || null;
+    let path;
 
     if (image) {
       image = req.file.filename;
+      path = req.file.path;
+    } else {
+      image = oldAdvertData.image;
     }
 
-    const path = req.file.path;
-
-    await cloudinary.uploader.upload(
-      path,
-      { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
-      function (err, imageUpload) {
-        if (err) return res.send(err);
-        // remove file from server
-        const fs = require('fs');
-        fs.unlinkSync(path);
-        // return image details
-      },
-    );
+    if (path && image) {
+      await cloudinary.uploader.upload(
+        path,
+        { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
+        function (err, imageUpload) {
+          if (err) return res.send(err);
+          // remove file from server
+          const fs = require('fs');
+          fs.unlinkSync(path);
+          // return image details
+        },
+      );
+    }
 
     const advertSaved = await Adverts.findByIdAndUpdate(
       { _id },
-      { ...advertData, image },
+      { ...advertData, tags: advertData.tags.split(','), image },
       {
         new: true,
         useFindAndModify: false,
