@@ -89,24 +89,27 @@ exports.postAdvert = async (req, res, next) => {
   try {
     const { name, price, type, tags, description } = req.body;
     let image = req.file;
+    let path;
 
     if (image) {
       image = req.file.filename;
+      path = req.file.path;
     }
 
-    const path = req.file.path;
+    if(path){
+      await cloudinary.uploader.upload(
+          path,
+          { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
+          function (err, imageUpload) {
+            if (err) return res.send(err);
+            // remove file from server
+            const fs = require('fs');
+            fs.unlinkSync(path);
+            // return image details
+          },
+      );
+    }
 
-    await cloudinary.uploader.upload(
-      path,
-      { public_id: `advert/${image}`, tags: `advert` }, // directory and tags are optional
-      function (err, imageUpload) {
-        if (err) return res.send(err);
-        // remove file from server
-        const fs = require('fs');
-        fs.unlinkSync(path);
-        // return image details
-      },
-    );
     //const advertData = req.body;
 
     // We create a document in memory
