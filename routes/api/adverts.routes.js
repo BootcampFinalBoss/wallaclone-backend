@@ -68,4 +68,6 @@ router.get('/tags', function (req, res) {
   res.json({ result: Adverts.allowedTags() });
 });
 
+router.post('/advert/contact/:_id', advertController.contactAdvert);
+
 module.exports = router;

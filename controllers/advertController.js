@@ -3,6 +3,7 @@
 /* eslint-disable prefer-destructuring */
 /* eslint-disable radix */
 const { findById } = require('../models/Adverts');
+const nodemailer = require('nodemailer');
 const Adverts = require('../models/Adverts');
 const Users = require('../models/Users');
 
@@ -287,4 +288,48 @@ exports.updateAdvertState = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+exports.contactAdvert = async (req, res, next) => {
+  const { username } = req.body;
+  const {_id} = req.params;
+
+try{
+  const user = await Users.findOne({ username });
+  const advert = await Adverts.findOne({_id});
+  await Users.populate(advert, { path: 'user' }, function (err, advert) {
+
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: '<user01finalboss@gmail.com>',
+      to: advert.user.email,
+      subject: `Interes en el producto ${advert.name}`,
+      html: `<p>Hola ${advert.user.name},</p> 
+      <p>${user.username} esta interesado en el siguiente producto ${advert.name}</p>
+      <p>Este es su correo ${user.email} para que puedas contactar con el.</p>
+      <p>Gracias.</p>
+    `,
+    };
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        res.send(500, err.message);
+      } else {
+        res.status(200).send({ msg: 'El correo se ha enviado correctamente', mailOptions });
+        
+      }
+    });
+  });
+
+}catch(err){
+  res.json(err);
+}
+
 };
